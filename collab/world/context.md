@@ -1,6 +1,10 @@
-### Project(s) & Business Context
+### Context
 
 <!-- Tier 1 — ~5,000 char cap. See methodology.md Section 4. -->
+
+#### Personal
+
+<!-- Who is the user? What is their role? Relevant background, circumstances, personality? -->
 
 #### Organization
 

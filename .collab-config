@@ -1,6 +1,4 @@
-# Collaboration Memory System configuration
-# This file is read by hooks and referenced by methodology.md
-# Location: project root
+<!-- Configuration for the collaboration memory system. Read by hooks, referenced by methodology. -->
 
 collab_dir=collab
 consolidation_soft_threshold=50

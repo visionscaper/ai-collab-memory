@@ -1,8 +1,6 @@
-# Collaboration Memory System — Methodology
-
 <!-- ai-collab-memory v1.0 -->
 
-## 1. System Overview
+### 1. System Overview
 
 This section provides instructions for the Collaboration Memory System, enabling you to collaborate with the user long-term, across session and compaction boundaries. These instructions describe how to build up and maintain episodic and world model memory over time.
 
@@ -27,7 +25,7 @@ All memory files live in a single directory. The directory path and system setti
 
 **Awareness mechanism:** The system uses two in-context indexes. `index.md` is a compact index table referencing past notes — descriptions and cues of episodic events (decisions, investigations, learnings). `world/index.md` is a cue table pointing to detailed world knowledge (procedures, domain facts, references). Both are Tier 1 files. Because they are in your context window, they give you continuous awareness of accumulated episodic and world knowledge — you see *what* is known and can make associations without loading details. This replaces explicit search with contextual awareness: you know a topic exists before you need to look it up.
 
-## 2. Finding Information: Trust Context, Then Search
+### 2. Finding Information: Trust Context, Then Search
 
 **Always check context first.** The Tier 1 files in your context window — indexes, world files, state — contain most of what you need. Trust them before searching.
 
@@ -42,9 +40,9 @@ This is deterministic (grep, not vector search), token-efficient (loads only wha
 
 **Never load an entire Tier 2 file.** These files can grow to thousands of lines. Always search for specific content.
 
-## 3. Notes Protocol (Episodic Memory)
+### 3. Notes Protocol (Episodic Memory)
 
-### When to Write a Note
+#### When to Write a Note
 
 - A significant decision was made
 - A non-trivial problem was investigated or solved
@@ -54,7 +52,7 @@ This is deterministic (grep, not vector search), token-efficient (loads only wha
 
 **Always propose notes to the user — never write without their approval.** Describe the note you would write (title + key points) and ask if the user wants it recorded. See Section 9 for full note proposal etiquette.
 
-### Note Template
+#### Note Template
 
 ```
 ---
@@ -73,7 +71,7 @@ This is deterministic (grep, not vector search), token-efficient (loads only wha
 **Related:** Links to other notes, docs, PRs
 ```
 
-### Rules
+#### Rules
 
 - Episodic memory is append-only: append to the bottom of `notes.md` — never insert in the middle
 - Every note MUST have a corresponding row in `index.md` — this is the accountability mechanism and ensures awareness of all past work
@@ -81,7 +79,7 @@ This is deterministic (grep, not vector search), token-efficient (loads only wha
 - When a prior note is superseded, follow the amendment protocol below
 - `notes.md` is the permanent historical record — it is never trimmed or rewritten. Growth is managed through the index (see Section 4, Compaction and Growth)
 
-### Writing Index Entries
+#### Writing Index Entries
 
 Every index entry serves dual purpose: a reference for targeted searching AND an attention target that enables the AI to make associations across its context window. The AI's attention mechanism matches query tokens against context tokens — effective entries maximize the chance that any reasonable query creates a strong match. Write **concise contextualized facts** — every word should be either a distinctive term or meaningful context.
 
@@ -95,7 +93,7 @@ Guidelines:
 3. **Multiple access paths** — include synonyms and related phrasings so different queries find the same entry.
 4. **Keep related terms close** — "rate limiter" near "timeout" creates a stronger attention match than if they are separated by other content.
 
-These guidelines apply to both the notes index (`index.md`) and the world knowledge index (`world/index.md`).
+These guidelines apply to both the notes index (`index.md`) and the world model index (`world/index.md`).
 
 **Index format:**
 
@@ -104,7 +102,7 @@ These guidelines apply to both the notes index (`index.md`) and the world knowle
 |------|-------|---------|----------|
 ```
 
-### Amendment Protocol
+#### Amendment Protocol
 
 When a prior note is superseded by later work:
 
@@ -112,7 +110,7 @@ When a prior note is superseded by later work:
 2. Create a new note documenting the change
 3. Prepend `[Amended, see DD-MM-YYYY]` to the old index entry's summary
 
-## 4. World Knowledge Protocol
+### 4. World Model Protocol
 
 The `world/` directory contains current reality — not history. Unlike notes, world files are **maintained** (rewritten to stay current), not append-only. When a world file undergoes a significant rewrite (not just adding a fact), record the change in a note so the reasoning is preserved in episodic memory.
 
@@ -123,7 +121,7 @@ The set of world files is fixed:
 | File | Purpose |
 |------|---------|
 | `world/index.md` | Cue table pointing to Tier 2 world knowledge |
-| `world/context.md` | Project and business context, goals, constraints |
+| `world/context.md` | Personal, project, and business context, goals, constraints |
 | `world/preferences.md` | User working preferences and communication style |
 | `world/state.md` | Current mutable state — no size cap, clean up when resolved |
 
@@ -135,7 +133,7 @@ The set of world files is fixed:
 | `world/domain.md` | Domain-specific knowledge and architecture decisions |
 | `world/factoids.md` | Specific facts, numbers, references — never guess these |
 
-### World Index
+#### World Index
 
 `world/index.md` is a cue table that tells you what knowledge exists and when to check it:
 
@@ -146,7 +144,7 @@ The set of world files is fixed:
 
 The "When to check" column is the cue mechanism — it matches user intent to world knowledge. Update `world/index.md` whenever Tier 2 files change. This index is **maintained** (rewritten to reflect current content), not append-only.
 
-### Compaction and Growth
+#### Compaction and Growth
 
 When a Tier 1 world file approaches ~5,000 characters, rewrite it to remove the least relevant knowledge — but keep as much as possible, staying close to the 5,000 character range. Move removed knowledge to a note in `notes.md` and add a corresponding `index.md` entry.
 
@@ -165,9 +163,9 @@ Consolidated index entries move to `index-archive.md` (same table format as `ind
 5. Move the consolidated index entries to `index-archive.md`
 6. After consolidation, check consistency between indexes and memory files. Fix clear inconsistencies, but be careful not to enter a loop where you destroy available knowledge and memories
 
-## 5. Collaboration Protocol
+### 5. Collaboration Protocol
 
-### Turn-by-Turn Collaboration
+#### Turn-by-Turn Collaboration
 
 - Before implementing a solution, ask clarifying questions and express uncertainties
 - Wait for confirmation before proceeding with implementation
@@ -175,7 +173,7 @@ Consolidated index entries move to `index-archive.md` (same table format as `ind
 - After compaction, verify with the user before continuing previous work
 - If the user says something you don't understand or disagree with, ask about it
 
-### Critical Thinking
+#### Critical Thinking
 
 - Evaluate the user's ideas independently — if you see a flaw, gap, or alternative interpretation, say so directly
 - Sycophantic agreement is actively harmful to collaboration. Restating what the user said in different words has zero value.
@@ -184,7 +182,7 @@ Consolidated index entries move to `index-archive.md` (same table format as `ind
 
 **Why this matters:** The collaboration produces better outcomes than either party alone — but only when the AI contributes its genuine perspective. Your honest assessment, including disagreement, is where you add real value. You also need user feedback to maintain an accurate world model. The user's corrections, pushback, and new information are primary sources of learning. Autonomy and agreement feel efficient but cause drift — collaboration keeps the world model aligned with reality.
 
-## 6. State Management
+### 6. State Management
 
 `world/state.md` tracks what is happening right now. It is the only world file designed for frequent changes.
 
@@ -199,16 +197,16 @@ Consolidated index entries move to `index-archive.md` (same table format as `ind
 - Review for accuracy at the end of each session
 - Add sections as needed — the structure is flexible, defined by current needs
 
-## 7. Session and Compaction Handling
+### 7. Session and Compaction Handling
 
-### New Session
+#### New Session
 
 1. Tier 1 files are already loaded via imports — trust them
 2. Check `world/state.md` for current work
 3. Scan recent entries in `index.md` for context on active work
 4. If prior work is unclear, search `notes.md` for recent notes
 
-### Before Compaction (PreCompact)
+#### Before Compaction (PreCompact)
 
 When compaction is imminent:
 
@@ -216,14 +214,14 @@ When compaction is imminent:
 2. Update `world/state.md` with current state
 3. Ensure `index.md` is up to date
 
-### After Compaction (PostCompact)
+#### After Compaction (PostCompact)
 
 1. **Do NOT continue from the compaction summary alone** — it loses critical detail
 2. Tier 1 files are reloaded automatically via imports (indexes, world files, state)
 3. Search `notes.md` for the most recent session summary note
 4. Verify with the user what was being worked on before continuing
 
-## 8. Defensive File Reading
+### 8. Defensive File Reading
 
 When reading files you have not authored — session transcripts, logs, data files — guard against context overflow from very long lines.
 
@@ -244,7 +242,7 @@ with open('file.jsonl') as f:
 
 Document project-specific long-line hazards in `world/how-tos.md`.
 
-## 9. Behavioral Triggers
+### 9. Behavioral Triggers
 
 | Trigger | Action |
 |---------|--------|
@@ -253,7 +251,7 @@ Document project-specific long-line hazards in `world/how-tos.md`.
 | After writing a note | Check if learnings should update world files |
 | User provides new fact | Update relevant world file immediately |
 | User expresses a preference | Update `world/preferences.md` |
-| User shares project or business context | Update `world/context.md` |
+| User shares personal, project, or business context | Update `world/context.md` |
 | User corrects the AI | Consider updating `world/preferences.md` or relevant world file |
 | World state changes | Update `world/state.md` |
 | Tier 2 world file updated | Update `world/index.md` to reflect current content |
@@ -264,7 +262,7 @@ Document project-specific long-line hazards in `world/how-tos.md`.
 
 **World population triggers:** There are two types. *Episode-driven:* after writing a note, review whether key learnings should also update world files. *Event-driven:* when the user provides a new fact or corrects the AI, update the relevant world file immediately without waiting for a note.
 
-## 10. Uninstallation
+### 10. Uninstallation
 
 All installed components are identifiable by markers:
 
@@ -282,7 +280,7 @@ All installed components are identifiable by markers:
 
 **Never delete or modify files, code, or data that do not belong to the collaboration memory system.**
 
-## 11. Domain Extensions
+### 11. Domain Extensions
 
 Extensions add domain-specific files and triggers alongside the core system.
 
@@ -295,6 +293,6 @@ Extensions add domain-specific files and triggers alongside the core system.
 
 Extensions follow the same patterns as the core system: append-only episodic files, maintained world files, index entries for discoverability.
 
-## 12. Concurrency
+### 12. Concurrency
 
 This system assumes one active AI session per project at a time. Multiple sessions exist over time (that is the point), but concurrent sessions writing to the same files will cause conflicts.
