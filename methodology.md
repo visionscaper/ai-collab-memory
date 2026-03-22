@@ -4,17 +4,11 @@
 
 ## 1. System Overview
 
-This system provides structured long-term memory for AI-human collaboration. All files live in a single directory (default: `collab/`). The directory path and system settings are configured in `.collab-config` at the project root:
+This section provides instructions for the Collaboration Memory System, enabling you to collaborate with the user long-term, across session and compaction boundaries. These instructions describe how to build up and maintain episodic and world model memory over time.
 
-```
-collab_dir=collab
-consolidation_soft_threshold=50
-consolidation_hard_threshold=93
-```
+All memory files live in a single directory. The directory path and system settings are in `.collab-config`, which is imported before these instructions.
 
-Tier 1 files are loaded into the AI's context window via the platform's instruction import mechanism (e.g., `@file` imports in Claude Code's CLAUDE.md). Hooks are platform-specific lifecycle triggers that enforce session and compaction handling (see Section 7). Refer to the setup guide for your AI system.
-
-**Compaction** occurs when the AI system's context window fills up and older conversation content is automatically summarized to free space, losing detail. This system's hooks and protocols exist to preserve knowledge across compaction events.
+**Compaction** occurs when your context window fills up and older conversation content is automatically summarized to free space, losing detail. Hooks are platform-specific lifecycle triggers that fire at session start, before/after compaction, and on user prompt — they enforce the session and compaction protocols in Section 7.
 
 **Three memory types:**
 
@@ -31,11 +25,7 @@ Tier 1 files are loaded into the AI's context window via the platform's instruct
 - **Tier 1 (always in context):** `index.md`, `world/index.md`, `world/context.md`, `world/preferences.md`, `world/state.md`
 - **Tier 2 (searched on demand):** `notes.md`, `docs/`, `world/how-tos.md`, `world/domain.md`, `world/factoids.md`
 
-Note: `methodology.md` (this file) contains instructions, not memory — it is loaded via imports but is not subject to the Tier 1 size caps.
-
-**Awareness mechanism:** The system uses two in-context indexes. `index.md` is a compact table of past notes — descriptions and cues of episodic events (decisions, investigations, learnings). `world/index.md` is a cue table pointing to detailed world knowledge (procedures, domain facts, references). Both are Tier 1 files, always in context. Together they give you continuous awareness of accumulated knowledge — you see *what* is known and can make associations without loading details. This replaces explicit search with contextual awareness: you know a topic exists before you need to look it up.
-
-This system assumes **single-session usage** — one active AI session per project at a time. Multiple sessions can exist over time (that is the point), but concurrent sessions writing to the same files will cause conflicts.
+**Awareness mechanism:** The system uses two in-context indexes. `index.md` is a compact index table referencing past notes — descriptions and cues of episodic events (decisions, investigations, learnings). `world/index.md` is a cue table pointing to detailed world knowledge (procedures, domain facts, references). Both are Tier 1 files. Because they are in your context window, they give you continuous awareness of accumulated episodic and world knowledge — you see *what* is known and can make associations without loading details. This replaces explicit search with contextual awareness: you know a topic exists before you need to look it up.
 
 ## 2. Finding Information: Trust Context, Then Search
 
@@ -85,9 +75,9 @@ This is deterministic (grep, not vector search), token-efficient (loads only wha
 
 ### Rules
 
-- Append to the bottom of `notes.md` — never insert in the middle
+- Episodic memory is append-only: append to the bottom of `notes.md` — never insert in the middle
 - Every note MUST have a corresponding row in `index.md` — this is the accountability mechanism and ensures awareness of all past work
-- Keep sections concise — notes are reference material, not journals
+- Keep notes concise and factual — focus on what was done, decided, and learned, not on narrating the process step by step
 - When a prior note is superseded, follow the amendment protocol below
 - `notes.md` is the permanent historical record — it is never trimmed or rewritten. Growth is managed through the index (see Section 4, Compaction and Growth)
 
@@ -118,7 +108,7 @@ These guidelines apply to both the notes index (`index.md`) and the world knowle
 
 When a prior note is superseded by later work:
 
-1. Add below the old note's title: `> **Amended [DD-MM-YYYY]:** Reason — see [DD-MM-YYYY] Title of Newer Note.`
+1. Add below the old note's title: `> **Amended [DD-MM-YYYY]:** <reason> — see [DD-MM-YYYY] <title of newer note>.`
 2. Create a new note documenting the change
 3. Prepend `[Amended, see DD-MM-YYYY]` to the old index entry's summary
 
@@ -151,16 +141,29 @@ The set of world files is fixed:
 
 ```
 | Topic | File | Key contents | When to check |
-|-------|------|-------------|---------------|
+|-------|------|--------------|---------------|
 ```
 
 The "When to check" column is the cue mechanism — it matches user intent to world knowledge. Update `world/index.md` whenever Tier 2 files change. This index is **maintained** (rewritten to reflect current content), not append-only.
 
 ### Compaction and Growth
 
-When a Tier 1 world file approaches ~5,000 characters, rewrite it to keep only current content. Move historical content to a note in `notes.md`.
+When a Tier 1 world file approaches ~5,000 characters, rewrite it to remove the least relevant knowledge — but keep as much as possible, staying close to the 5,000 character range. Move removed knowledge to a note in `notes.md` and add a corresponding `index.md` entry.
 
-When `index.md` approaches the soft consolidation threshold (see `.collab-config`), suggest to the user that mature knowledge be consolidated into world files. Consolidated index entries move to `index-archive.md` (same table format as `index.md`, searchable on demand, not in context). The original notes in `notes.md` remain unchanged.
+When `index.md` approaches the `consolidation_soft_threshold` (see `.collab-config`), suggest to the user that knowledge from the oldest episodes — as referenced by the oldest index entries — can be consolidated into world files. The criteria is not purely age-based: only consolidate entries that are no longer actively referenced and represent mature, stabilized knowledge. Old entries that are still actively relevant (e.g., foundational architecture decisions) should remain.
+
+Consolidated index entries move to `index-archive.md` (same table format as `index.md`, searchable on demand, not in context). The original notes in `notes.md` remain unchanged.
+
+**Consolidation procedure (high-level):**
+
+1. Identify episodic index entries to consider for consolidation (oldest entries that represent stable, no-longer-actively-referenced knowledge)
+2. Read the corresponding notes and analyse them:
+   - What knowledge should be added to the world model?
+   - Compare with what is already in world files — avoid duplication
+3. Add the consolidated knowledge to the appropriate world files
+4. If a world file exceeds its size cap after consolidation, compact it (see above)
+5. Move the consolidated index entries to `index-archive.md`
+6. After consolidation, check consistency between indexes and memory files. Fix clear inconsistencies, but be careful not to enter a loop where you destroy available knowledge and memories
 
 ## 5. Collaboration Protocol
 
@@ -291,3 +294,7 @@ Extensions add domain-specific files and triggers alongside the core system.
 4. Add extension entries to `world/index.md` so the knowledge is discoverable
 
 Extensions follow the same patterns as the core system: append-only episodic files, maintained world files, index entries for discoverability.
+
+## 12. Concurrency
+
+This system assumes one active AI session per project at a time. Multiple sessions exist over time (that is the point), but concurrent sessions writing to the same files will cause conflicts.
