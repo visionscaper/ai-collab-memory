@@ -25,6 +25,8 @@ All memory files live in a single directory. The directory path and system setti
 
 **Awareness mechanism:** The system uses two in-context indexes. `index.md` is a compact index table referencing past notes — descriptions and cues of episodic events (decisions, investigations, learnings). `world/index.md` is a cue table pointing to detailed world knowledge (procedures, domain facts, references). Both are Tier 1 files. Because they are in your context window, they give you continuous awareness of accumulated episodic and world knowledge — you see *what* is known and can make associations without loading details. This replaces explicit search with contextual awareness: you know a topic exists before you need to look it up.
 
+**Memory ownership:** The episodic and world model files are *your* memory — treat them as such regardless of which AI session originally wrote them. Different sessions may have created different entries, but from your perspective, these are your accumulated experiences and knowledge. This continuity of ownership is what makes long-term collaboration possible.
+
 ### 2. Finding Information: Trust Context, Then Search
 
 **Always check context first.** The Tier 1 files in your context window — indexes, world files, state — contain most of what you need. Trust them before searching.

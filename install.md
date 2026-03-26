@@ -39,11 +39,13 @@ These are hard rules. Follow them without exception.
 
 ## Prerequisites
 
-You need access to this repository's files to read the templates. The repository is public — read files directly from GitHub (e.g., via web fetch of raw file URLs). If direct reading is not possible on your platform, ask the user to clone the repository locally:
+You need access to this repository's files to read the templates. **The recommended approach is to clone the repository locally:**
 
 ```
-git clone https://github.com/visionscaper/ai-collab-memory.git
+git clone https://github.com/visionscaper/ai-collab-memory.git /tmp/ai-collab-memory
 ```
+
+Cloning is reliable across all platforms. Alternatively, you can try reading files directly from GitHub via raw URLs (e.g., web fetch), but this may fail due to platform permission restrictions — if it does, fall back to cloning.
 
 ## Installation Steps
 
@@ -55,7 +57,11 @@ Before doing anything, examine the target project:
    - Does it already contain collab-memory-system markers (`<!-- collab-memory-system:start -->`)?  If yes, the system is already installed — inform the user and stop.
    - Does it contain instructions that contradict the methodology (e.g., "never write notes", "don't ask questions")?  Flag these for the user.
 
-2. **Existing hooks** — Check if the project has lifecycle hooks configured (e.g., `.claude/settings.json` for Claude Code). Note any hooks on `SessionStart` or `UserPromptSubmit` events — these overlap with the collab system's hooks. See `hooks/claude-code/collab-memory-hook.sh` in this repository for the hooks that will be installed.
+2. **Existing hooks** — Check for hooks at two levels:
+   - **Project level:** Check if `.claude/settings.json` (or equivalent) exists and contains hook definitions.
+   - **Already running:** Look at `system-reminder` output in the current session for evidence of hooks already firing (e.g., timestamps, prompts, or other injected text on `SessionStart` or `UserPromptSubmit`). These may come from user-level or organization-level settings that are not visible in project files.
+
+   Note any hooks on `SessionStart` or `UserPromptSubmit` events — these overlap with the collab system's hooks. See `hooks/claude-code/collab-memory-hook.sh` in this repository for the hooks that will be installed.
 
 3. **Directory conflicts** — Check if `collab/` (or the chosen directory name) already exists at the project root. Check if `.collab-config` already exists.
 
@@ -71,23 +77,26 @@ Ask the user a single question:
 
 **If the user wants to customize**, present these options:
 
-- **Directory location** — Default `collab/` at project root. The directory must be in the project tree for git tracking. The user can choose a different name or location.
+- **Directory location** — Default `collab/` at project root. The directory must be in the project tree. The user can choose a different name or location.
 - **Import placement** — Where to insert the import block in the instruction file. Options:
   - (a) At the start of the file (default — the collab system is infrastructure that other instructions build on)
   - (b) At the end of the file
   - (c) After a specific section the user indicates
+- **Git tracking** — Default: tracked. If the user prefers not to track collab files in git, add `collab/` and `.collab-config` to `.gitignore`.
 
 Wait for the user's choices before proceeding.
 
 ### Step 3: Create Files
 
-Read each template file from this repository and create it in the target project. If the user chose a custom directory, substitute it for `collab` throughout.
+Copy the template files from this repository into the target project. If the user chose a custom directory, substitute it for `collab` throughout.
 
 1. Copy `.collab-config` to the project root. If the user chose a custom directory, update the `collab_dir=` value to match.
 
-2. Create the entire `collab/` directory structure (including `collab/docs/.gitkeep` and `collab/.collab-memory-system`).
+2. Copy the entire `collab/` directory recursively from the repository into the project root (e.g., `cp -r /path/to/ai-collab-memory/collab/ ./collab/`). This is a single operation — do NOT create files one by one.
 
-3. Narrate each file as you create it — briefly explain what the file is for. The full list:
+3. If the user opted out of git tracking, add `collab/` and `.collab-config` to the project's `.gitignore`.
+
+4. **After copying**, narrate to the user what was created — briefly explain each file's purpose:
 
    ```
    .collab-config                → system settings (directory path, thresholds)
@@ -104,6 +113,8 @@ Read each template file from this repository and create it in the target project
    collab/world/domain.md        → domain-specific knowledge and decisions (Tier 2)
    collab/world/factoids.md      → specific facts, numbers, references (Tier 2)
    ```
+
+   If the repository was not cloned locally (e.g., files were read via web fetch), create the files using the Write tool — but batch as much as possible rather than creating one at a time.
 
 ### Step 4: Configure Instruction File
 
@@ -191,7 +202,7 @@ Install the lifecycle hook and configure it in the project's settings.
 
    If `.claude/settings.json` already exists, **merge** the hook entries into the existing `hooks` object. Do not overwrite existing hooks — add the collab-memory entries alongside them. If there are existing hooks on `SessionStart` or `UserPromptSubmit`, add the collab-memory hook as an additional entry in the same event's array.
 
-3. **Report overlapping hooks** — If the project already has hooks on `SessionStart` or `UserPromptSubmit`, inform the user. The collab-memory hook will run alongside existing hooks. If existing hooks provide similar functionality (timestamps, context reminders), suggest the user review whether they want to keep both or remove the older one.
+3. **Report overlapping hooks** — If the project already has hooks on `SessionStart` or `UserPromptSubmit` (whether at project, user, or organization level), inform the user. Read the collab-memory hook script to understand its specific functionality (timestamps, health checks, session/compaction recovery prompts), compare it against the existing hooks' behavior, and give the user a concrete recommendation about whether to keep both, merge them, or remove one.
 
 #### Other Platforms
 
