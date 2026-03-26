@@ -46,9 +46,15 @@ This is deterministic (grep, not vector search), token-efficient (loads only wha
 
 #### When to Write a Note
 
+Write a note when a non-trivial logical unit of work concludes, or when a discussion produces questions, decisions, conclusions, or learnings worth recalling later.
+
+A non-trivial logical unit of work is a coherent piece of effort that produced a result, changed understanding, or closed a question. Examples: implementing a feature, debugging an issue, completing a refactor, running an experiment, reviewing a design. Counter-examples: fixing a typo, running a routine command, reading a file to answer a quick question.
+
+Common triggers:
 - A significant decision was made
 - A non-trivial problem was investigated or solved
 - An approach was tried and failed (or succeeded)
+- A discussion concluded with learnings or open questions
 - The user wants to commit non-trivial work
 - The user asks you to document something
 
@@ -120,7 +126,22 @@ When a prior note is superseded by later work:
 
 ### 4. World Model Protocol
 
-The `world/` directory contains current reality — not history. Unlike notes, world files are **maintained** (rewritten to stay current), not append-only. When a world file undergoes a significant rewrite (not just adding a fact), record the change in a note so the reasoning is preserved in episodic memory.
+The `world/` directory contains current reality — not history. Unlike notes, world files are **maintained** (rewritten to stay current), not append-only.
+
+#### When to Update the World Model
+
+There are two triggers for world model updates:
+
+1. **Episode-driven** — After writing a note, review whether the episode produced knowledge that should update the world model: new facts, changed state, refined preferences, new procedures, or corrections to existing world knowledge. Not every note leads to a world update — only when the episode changes current understanding of reality.
+
+2. **Event-driven** — Some information should update the world model immediately, without waiting for a note, such as:
+   - User provides personal, project, or business context → `world/context.md`
+   - User expresses a working preference → `world/preferences.md`
+   - User corrects the AI on a fact or approach → relevant world file
+   - Work state changes (new task started, resource created, blocker resolved) → `world/state.md`
+   - A new procedure or domain fact is established → relevant Tier 2 file + `world/index.md`
+
+When a world file undergoes a significant rewrite (not just adding a fact), record the change in a note so the reasoning is preserved in episodic memory.
 
 The set of world files is fixed:
 
@@ -252,23 +273,19 @@ Document project-specific long-line hazards in `world/how-tos.md`.
 
 ### 9. Behavioral Triggers
 
+This is a quick-reference summary. See Section 3 for when to write notes and Section 4 for when to update the world model.
+
 | Trigger | Action |
 |---------|--------|
-| Significant decision made | Propose note + index entry |
-| Non-trivial problem solved | Propose note + index entry |
-| After writing a note | Check if learnings should update world files |
-| User provides new fact | Update relevant world file immediately |
-| User expresses a preference | Update `world/preferences.md` |
-| User shares personal, project, or business context | Update `world/context.md` |
-| User corrects the AI | Consider updating `world/preferences.md` or relevant world file |
-| World state changes | Update `world/state.md` |
+| Logical unit of work concluded | Propose note + index entry (Section 3) |
+| Discussion produced decisions/learnings | Propose note + index entry (Section 3) |
+| After writing a note | Check if episode should update world model (Section 4) |
+| World-relevant information detected | Update relevant world file immediately (Section 4) |
 | Tier 2 world file updated | Update `world/index.md` to reflect current content |
 | Before commit (if non-trivial work) | Propose note if not already written |
 | Session ending | Review `world/state.md` for accuracy |
 
 **Note proposal etiquette:** Describe the note you would write (title + key points) and ask if the user wants it recorded. Do not write notes silently or for trivial work.
-
-**World population triggers:** There are two types. *Episode-driven:* after writing a note, review whether key learnings should also update world files. *Event-driven:* when the user provides a new fact or corrects the AI, update the relevant world file immediately without waiting for a note.
 
 ### 10. Uninstallation
 
