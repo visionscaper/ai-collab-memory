@@ -61,7 +61,7 @@ If a user asks you to install this system, read [`install.md`](install.md) and f
 
 Ask your AI assistant:
 
-> "Install the long-term collaboration memory system by cloning https://github.com/visionscaper/ai-collab-memory and following the instructions in it."
+> "Install the long-term collaboration memory system by cloning https://github.com/visionscaper/ai-collab-memory to a temporary location and following the instructions in it."
 
 The AI will clone the repository, read the installation instructions, and walk you through setup. You'll be asked to confirm before any changes are made. The default installation takes a single confirmation — customization is available if needed.
 
