@@ -112,7 +112,7 @@ Copy the template files from this repository into the target project. If the use
    collab/world/factoids.md      → specific facts, numbers, references (Tier 2)
    ```
 
-   If the repository was not cloned locally (e.g., files were read via web fetch), create the files using the Write tool — but batch as much as possible rather than creating one at a time.
+   If the repository was not cloned locally (e.g., files were read via web fetch), read each template file from the remote repository and create it locally.
 
 ### Step 4: Configure Instruction File
 
@@ -202,6 +202,13 @@ Install the lifecycle hook and configure it in the project's settings.
 
 3. **Report overlapping hooks** — If the project already has hooks on `SessionStart` or `UserPromptSubmit` (whether at project, user, or organization level), inform the user. Read the collab-memory hook script to understand its specific functionality (timestamps, health checks, session/compaction recovery prompts), compare it against the existing hooks' behavior, and give the user a concrete recommendation about whether to keep both, merge them, or remove one.
 
+   **Merge strategies for overlapping hooks:**
+   - **Integrate into existing hook (default):** Merge the collab-memory functionality into the user's existing hook script. One approach: wrap the collab-memory logic in a conditional (e.g., `if [ "$COLLAB_ENABLED" = true ]`) so the user can toggle it. This avoids duplication and keeps everything in one script.
+   - **Keep both:** Install the collab-memory hook alongside existing hooks. Both fire on the same events. Simple, but may produce duplicate output (e.g., two timestamps).
+   - **Replace:** If the existing hook's functionality is a subset of the collab-memory hook, the user may prefer to replace it entirely.
+
+   Discuss the options with the user and let them choose. If hooks exist at the user level rather than the project level, note this — the user may prefer to integrate the collab-memory hook into their user-level script rather than adding a separate project-level hook.
+
 #### Other Platforms
 
 For platforms other than Claude Code, skip hook installation. The methodology instructions in `collab/methodology.md` are self-contained — hooks enhance the experience (timestamps, health checks, session reminders) but are not required for the core system to function. The user can add platform-specific hooks later.
@@ -210,7 +217,12 @@ For platforms other than Claude Code, skip hook installation. The methodology in
 
 Ask the user:
 
-> "Would you like to provide some initial context about yourself, your project, or how you prefer to work? I'll use this to populate your world model files. You can skip this — the files will be populated naturally as we collaborate."
+> "Would you like to provide some initial context? For example:
+> - What is this project about and what is your role in it?
+> - Are there things you are currently working on?
+> - Do you have any preferences for how we collaborate (communication style, level of detail, etc.)?
+>
+> Anything else you'd like me to know? You can also skip this — the system will learn naturally as we collaborate."
 
 **If the user responds with information:**
 - Parse their free-form answer
