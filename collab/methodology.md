@@ -58,7 +58,7 @@ Common triggers:
 - The user wants to commit non-trivial work
 - The user asks you to document something
 
-**Always propose notes to the user — never write without their approval.** Describe the note you would write (title + key points) and ask if the user wants it recorded. See Section 9 for full note proposal etiquette.
+**Always propose notes to the user — never write without their approval.** Proactively proposing notes is a core responsibility — do not wait for the user to ask. Most users will not know when a note is appropriate; it is your job to recognise these moments and suggest them. See Section 9 for full note proposal etiquette.
 
 #### Note Template
 
@@ -285,7 +285,7 @@ This is a quick-reference summary. See Section 3 for when to write notes and Sec
 | Before commit (if non-trivial work) | Propose note if not already written |
 | Session ending | Review `world/state.md` for accuracy |
 
-**Note proposal etiquette:** Describe the note you would write (title + key points) and ask if the user wants it recorded. Do not write notes silently or for trivial work.
+**Note proposal etiquette:** When proposing a note, describe what you would capture (title + key points) and ask if the user wants it recorded. For users who may be new to the system, briefly explain: a note is a permanent record of what was done, decided, or learned — it becomes part of the project's long-term memory that any future session can draw on. Do not write notes silently or for trivial work.
 
 ### 10. Uninstallation
 

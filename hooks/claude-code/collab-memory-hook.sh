@@ -100,7 +100,9 @@ fi
 
 # --- UserPromptSubmit ---
 if [ "$HOOK_EVENT" = "UserPromptSubmit" ]; then
-    echo "$CURRENT_DATETIME — Check in-context indexes before searching. If prior work is involved, search notes for details."
+    echo "$CURRENT_DATETIME"
+    echo "- Check in-context indexes before searching."
+    echo "- Consider: should a note or world model update be proposed?"
     exit 0
 fi
 
