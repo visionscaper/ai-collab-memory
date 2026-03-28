@@ -100,6 +100,21 @@ The system is designed for teams from the ground up. Every note and index entry 
 
 The methodology defines when the AI should act: propose a note after a significant decision, update world files when the user shares new facts or preferences, check state at session boundaries, suggest consolidation when the index grows large. These triggers ensure the memory grows organically through normal collaboration — no manual maintenance required.
 
+## What Makes This Different
+
+AI platforms are adding memory features — auto-memory, memory consolidation, session notes. These work well for **tool-level memory**: remembering preferences, build commands, and framework choices across sessions. For a single developer on a straightforward project, that may be sufficient.
+
+ai-collab-memory addresses a different problem: **collaboration-level memory** for extended projects. The differences are structural, not incremental:
+
+- **Awareness through in-context indexing.** Compact indexes are always loaded in the AI's context window, designed for the attention mechanism's token-matching — enabling the AI to make associations across accumulated knowledge without explicit search. The technique of putting compact knowledge in context exists in prior work (Memex, Letta/MemGPT). We extend it to both episodic and world model awareness, with explicit guidelines for writing index entries optimised for associative recall.
+- **Episodic memory and world model as distinct memory types.** History (what happened, what was decided, why) and current knowledge (what's true now) serve different purposes and need different treatment. Episodic memory is append-only — the historical record is preserved. The world model is maintained — rewritten to reflect current reality. This separation is what makes it possible to both preserve long-term history and keep current knowledge compact.
+- **Long-term history without filling up context.** Only compact indexes live in context; full notes and documents are searched on demand. The index provides awareness of all past work without loading details. You can trace back to why a decision was made months ago — that reasoning isn't pruned away.
+- **Upward consolidation instead of downward pruning.** As the index grows, mature episodic knowledge consolidates *into* the world model — refining current understanding while preserving the original history. This is the opposite of pruning, which deletes old entries to stay under a cap.
+- **Multi-user by default.** Every note includes user attribution. World model files use per-user sections for git-friendly concurrent collaboration. Merge resolution is built into the methodology.
+- **The user participates in knowledge management.** Notes require user approval. World model updates are visible and editable. The user lives in reality — they know when a note is wrong or incomplete in ways the AI cannot detect. Knowledge stays aligned with reality because both parties maintain it.
+
+These distinctions matter more as project complexity grows, collaboration duration extends, and the need for historical reasoning increases. For simple preference tracking, platform-native memory may be enough.
+
 ## Requirements and Compatibility
 
 **Prerequisites:**
