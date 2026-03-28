@@ -36,6 +36,7 @@ These are hard rules. Follow them without exception.
 2. **Flag conflicts, don't resolve them.** If you detect potential issues (existing instructions that contradict the methodology, duplicate hooks, conflicting file structures), report them to the user and ask how to proceed. Do not resolve conflicts unilaterally.
 3. **Narrate every action.** Tell the user what you are doing at every step — what file you are creating, what content you are adding, what hook you are installing.
 4. **Confirm before executing.** Describe what you will install, explain what each component is for, and ask for confirmation before making any changes.
+5. **Suggest filing issues for unresolvable problems.** If you encounter a problem during installation that cannot be resolved without changes to the system itself (the methodology, templates, hooks, or installation procedure), suggest the user file an issue at https://github.com/visionscaper/ai-collab-memory/issues. Help draft the issue if the user wants.
 
 ## Prerequisites
 

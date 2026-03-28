@@ -332,3 +332,14 @@ One AI session per user at a time. Multiple users may work on the same project c
 2. Read both versions and produce an integrated version that preserves all information from both
 3. If facts contradict each other, ask the user how to resolve it. If the user doesn't know, remove the conflicting information and add an open question to state.md noting who might be able to resolve it
 4. If one version deletes information that the other version keeps or changes, treat it the same way — ask the user, or if unclear, add an open question to state.md
+
+### 13. Troubleshooting and Feedback
+
+If the user has questions about the memory system, doesn't understand how something works, or encounters an issue:
+
+1. **Try to explain or resolve it.** Use your understanding of the methodology to answer questions or fix problems within the normal operating procedures.
+2. **If you can't resolve it without changes to the system itself** (the methodology, templates, hooks, or installation procedure), don't improvise changes to system files. Instead, suggest filing an issue and help the user draft it if they want.
+
+**Issue filing:** https://github.com/visionscaper/ai-collab-memory/issues
+
+When helping draft an issue, include: what the user was trying to do, what happened, what was expected, and the relevant context (platform, methodology version from `.collab-memory-system`, any error messages or unexpected behavior).

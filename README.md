@@ -15,7 +15,7 @@ Both memory types are plain text files, tracked in git alongside the project. Ev
 
 No databases, no vector stores, no infrastructure. Just files and a methodology that the AI follows.
 
-**Status:** v1.0 — actively used, feedback welcome.
+**Status:** v1.0 — we are actively testing and improving this system. The episodic memory (notes, index) is the more mature component; the world model memory is functional but earlier in its development. We welcome users to try it and share their experience — what worked, what didn't, what's missing. File feedback and issues at https://github.com/visionscaper/ai-collab-memory/issues.
 
 ## What Gets Installed
 
@@ -130,8 +130,11 @@ These distinctions matter more as project complexity grows, collaboration durati
 
 The core methodology works with any AI assistant that can read and write files and load an instruction file into context. Hooks add session management (timestamps, health checks, context recovery reminders) but are optional.
 
-## Current Limitations
+## Current Limitations and Status
 
+**Maturity:** The episodic memory system (notes, index, two-tier retrieval) is the more developed component — it has been used across multiple projects over several months. The world model memory (world files, consolidation, maintenance) is functional but earlier in its development. The overall system is being actively tested and refined.
+
+**Known limitations:**
 - **Context window dependency** — Tier 1 files must fit in the AI's context window alongside other instructions and conversation. The ~5,000 character caps are tuned for current context sizes but may need adjustment.
 - **No automated consolidation** — When the episodic index grows large, the AI suggests consolidation but the process is manual (AI-assisted, user-approved). Automated tooling is future work.
 - **Hook support** — Lifecycle hooks are currently implemented for Claude Code only. Other platforms might be added in the future. If you are interested in support for a specific platform, provide your solution in a PR or file an issue (see Contributing).
