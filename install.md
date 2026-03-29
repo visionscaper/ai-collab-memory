@@ -64,7 +64,9 @@ Before doing anything, examine the target project:
 
 3. **Directory conflicts** — Check if `collab/` (or the chosen directory name) already exists at the project root. Check if `.collab-config` already exists.
 
-4. **Report findings** — Tell the user what you found: instruction file status, existing hooks, any conflicts. If there are conflicts, ask how to proceed before continuing.
+4. **Existing notes or journaling** — Check if there are instructions that indicate the project uses a notes or journaling system (e.g., instructions to write notes, maintain a journal, update an index, or log experiments). Look for referenced files like `notes.md`, `dev-notes.md`, `journal.md`, `experiment-logs.md`, or sections in the instruction file that serve as a history of past work. Also check whether the instruction file acts as an index (keyword-rich summaries pointing to detailed files). If the user mentions an existing system, investigate its structure.
+
+5. **Report findings** — Tell the user what you found: instruction file status, existing hooks, existing notes/journals, any conflicts. If there are conflicts, ask how to proceed before continuing.
 
 ### Step 2: Confirm with User
 
@@ -253,3 +255,22 @@ If all checks pass, inform the user:
 > "The collaboration memory system is installed. It will become active when you start a new session — the methodology, memory files, and hooks will load automatically at that point. The system will build up knowledge naturally as we collaborate."
 
 If any checks fail, report which ones and ask the user how to proceed. For issues that cannot be resolved, the user can file an issue at https://github.com/visionscaper/ai-collab-memory/issues.
+
+### Step 8: Migrate Existing Notes (if applicable)
+
+If Step 1 identified an existing notes or journaling system, discuss migration with the user:
+
+1. **Assess feasibility** — Describe what you found (file format, number of entries, structure). Discuss with the user whether migration makes sense: Are the notes still relevant? Is the format compatible? Would the project benefit from having this history in the episodic memory system? Migration is optional — the user may prefer to start fresh and keep old notes as a separate archive.
+
+2. **Plan the migration** — If the user wants to migrate:
+   - Determine how existing entries map to the collab system: which are episodic notes (`notes.md`), which are domain-specific logs (e.g., experiment logs as a domain extension), and which are project context that belongs in world model files. Discuss your findings with the user — they may have important insights about the structure or preferences about how things should be organised.
+   - If an existing index or index-like structure exists (e.g., keyword summaries in an instruction file), assess its coverage — does it reference all notes, or are there gaps? Plan to create index entries for unreferenced notes as well.
+   - **Before starting, list the kinds of world model topics that could be relevant** for this project (e.g., architecture decisions, technology constraints, domain knowledge, procedures, key facts). This primes your attention for recognising world model knowledge as you read each note.
+
+3. **Migrate chronologically** — Work through the existing notes in chronological order. For each note:
+   - Copy to `notes.md` (adjust to the note template format: `###` heading with `[DD-MM-YYYY]` date, `**With:**` field, `---` separator between notes). Copy related domain-specific entries (e.g., experiment logs) to their respective files.
+   - Create an index entry in `index.md` — use any existing index or summary as reference material; write new entries from scratch where none exist. Follow the index writing guidelines in the methodology (concise contextualized facts, distinctive terms, retrieval cues).
+   - Check if the note contains knowledge for the world model: new facts, procedures, domain knowledge, context, or preferences. Update the relevant world files when you find something. **Don't forget to update `world/index.md` when Tier 2 world files change.**
+   - For low-content notes, batching 2-4 at a time is acceptable. For notes with significant decisions or learnings, work one at a time to ensure careful world model review.
+
+4. **Track progress** — For large note sets that may span multiple sessions, record migration progress in `world/state.md` (e.g., "Migration: 45/184 notes done"). This is Tier 1, so the next session sees it immediately and can continue where you left off.
