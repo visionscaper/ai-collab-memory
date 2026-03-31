@@ -16,3 +16,4 @@
    - `collab/methodology.md` → your collab directory
    - `install.md` is reference only (not installed) — no action needed unless re-installing
 3. Add `tier_1_max_chars=5000` to your `.collab-config`
+4. Update `collab/.collab-memory-system` to `v1.1`
