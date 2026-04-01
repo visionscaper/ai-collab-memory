@@ -1,5 +1,22 @@
 # Release Notes
 
+## v1.2
+
+**Changes since v1.1 (commit `238e776`):**
+
+- **hooks/claude-code/collab-memory-hook.sh**: Removed per-message note/world-model cue from UserPromptSubmit (alarm fatigue — demonstrably ineffective). Added `print_memory_triggers()` function with consolidated trigger list, called in all SessionStart cases (startup/clear, compact, resume). Moved "check in-context indexes" cue from per-message to session start. UserPromptSubmit now outputs timestamp only.
+- **collab/methodology.md**: Section 9 rewritten — trigger table replaced with single action statement + consolidated trigger list covering both episodic and world model updates. Sections 3 and 4 now reference Section 9 for triggers (concept vs quick-reference separation). Section 3: added discussion examples to "non-trivial logical unit of work" definition (discuss → decide → implement pattern), removed duplicate "Common triggers" list. Section 11: "trigger table" → "trigger list".
+- **README.md**: "Usage Tips" → "Working with the Memory System" — user positioned as primary driver of memory updates, with honest explanation of AI attention limitations. Added sub-agent reflection as future work in limitations section.
+- **install.md**: Step 8 migration rewritten — bulk migration (mechanical transform + corpus-level world model extraction) as default approach. Added historical references principle (notes are historical records, paths stay as-is). Priming wording adjusted for bulk approach.
+
+**Upgrade from v1.1:**
+
+1. Compare changes: `git diff 238e776..HEAD` in the ai-collab-memory repo
+2. Copy updated files to your installation:
+   - `collab/methodology.md` → your collab directory
+   - `hooks/claude-code/collab-memory-hook.sh` → your `.claude/hooks/collab-memory-hook.sh`
+3. Update `collab/.collab-memory-system` to `v1.2`
+
 ## v1.1
 
 **Changes since v1.0 (commit `7f3037c`):**
