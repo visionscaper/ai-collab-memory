@@ -10,8 +10,8 @@ These instructions are for you, the AI assistant. Follow them step by step to in
 
 **Repository structure reference:**
 ```
-.collab-config              → project root
-collab/
+.collab-config              → code repo root
+collab/                     → (solo: real directory | team: symlink to external location)
 ├── .collab-memory-system   (version marker)
 ├── methodology.md          (your operating instructions)
 ├── index.md                (episodic memory index — Tier 1)
@@ -28,6 +28,8 @@ collab/
     ├── domain.md           (domain knowledge — Tier 2)
     └── factoids.md         (specific facts and references — Tier 2)
 ```
+
+**Note on solo vs team:** For **solo** installations, `collab/` is a real directory in the code repo. For **team** installations, `collab/` is a symlink pointing to an external shared-knowledge repo (e.g., `../shared-knowledge/collab/project-x/`). The solo/team choice is made in Step 2 and explained in the README's "Distributed Collaboration" section.
 
 ## Principles
 
@@ -63,69 +65,112 @@ Before doing anything, examine the target project:
 
    Note any hooks on `SessionStart` or `UserPromptSubmit` events — these overlap with the collab system's hooks. See `hooks/claude-code/collab-memory-hook.sh` in this repository for the hooks that will be installed.
 
-3. **Directory conflicts** — Check if `collab/` (or the chosen directory name) already exists at the project root. Check if `.collab-config` already exists.
+3. **Directory conflicts** — Check if `collab/` already exists at the project root (as a directory or a symlink). Check if `.collab-config` already exists at the project root.
 
 4. **Existing notes or journaling** — Check if there are instructions that indicate the project uses a notes or journaling system (e.g., instructions to write notes, maintain a journal, update an index, or log experiments). Look for referenced files like `notes.md`, `dev-notes.md`, `journal.md`, `experiment-logs.md`, or sections in the instruction file that serve as a history of past work. Also check whether the instruction file acts as an index (keyword-rich summaries pointing to detailed files). If the user mentions an existing system, investigate its structure.
 
 5. **Report findings** — Tell the user what you found: instruction file status, existing hooks, existing notes/journals, any conflicts. If there are conflicts, ask how to proceed before continuing.
 
-### Step 2: Confirm with User
+### Step 2: Solo or Team Use?
 
-Ask the user a single question:
+Before installing, ask the user:
 
-> "I'll install the collaboration memory system with recommended defaults into `collab/` at the project root, with imports at the end of your instruction file. All files will be git-tracked and human-auditable. Shall I proceed with defaults, or would you prefer to review customization options first?"
+> "Is this memory system for solo use, or will it be shared with a team or organisation? This choice matters because it determines where the memory lives:
+>
+> - **Solo** — The collab memory can live inside the project's code repository (default). Simple, everything in one place.
+> - **Team** — The collab memory lives in a separate repository shared across the team. This avoids branch-divergence merge conflicts, keeps private project knowledge out of public code repos, and gives memory its own commit history separate from code churn. See 'Distributed Collaboration' in the README for the full rationale."
 
-**If the user chooses defaults:** proceed to Step 3.
+**If solo:** Default installation — `collab/` at project root, tracked in the code repo. Continue to Step 3.
+
+**If team:** Ask:
+
+> "Do you already have a shared-knowledge repository for this team?"
+
+- **Yes** — Ask the user for its location (local path). Explain that the typical team pattern is `<shared-knowledge-repo>/collab/<project-name>/` — confirm with the user where the new project's memory directory should go.
+- **No** — Explain the two patterns (paraphrase from the README "Distributed Collaboration" section): single shared-knowledge repo containing all projects, or per-project memory repos. Recommend the single shared-knowledge repo as the default unless the user has access-control reasons for per-project repos. Offer to help create it:
+  - If `gh` is available, offer to create a new GitHub repo (e.g., `gh repo create <org>/shared-knowledge --private`) and clone it locally. Confirm the org/name with the user before creating.
+  - Otherwise, give the user manual instructions to create the repo and clone it. Wait for the user to confirm it's ready.
+  - Once the shared repo exists, the new project's memory will live at `<shared-repo>/collab/<project-name>/`.
+
+**How team installations work:** The collab directory lives in the external shared-knowledge repo. In the code repo, a symlink named `collab` points to the external location. This keeps `.collab-config`, the import block, and all `@collab/...` paths identical between solo and team installations — the symlink handles the redirection transparently. The symlink is git-ignored (each dev creates their own after cloning the code repo).
+
+Once the shared repo is in place and the target path is confirmed, continue to Step 3.
+
+### Step 3: Confirm Installation Details
+
+Once the solo/team decision is made, summarise for the user what you found in Step 1 (instruction file, existing hooks, conflicts) and the solo/team choice from Step 2, then describe what you are about to install (directory location, import placement, hooks). Then ask:
+
+> "Shall I proceed with recommended defaults, or would you prefer to review customization options first?"
+
+**If the user chooses defaults:** proceed to Step 4.
 
 **If the user wants to customize**, present these options:
 
-- **Directory location** — Default `collab/` at project root. The user can choose a different name or location. An alternative pattern is a **shared knowledge repository** — a separate repo dedicated to collaboration memory across multiple projects. Each project gets its own directory in the knowledge repo with a `collab/` subdirectory. This keeps code repos clean and centralizes collaboration knowledge. If the collab directory is outside the working repo, `.collab-config` still goes at the working repo root with `collab_dir` set to the absolute path of the collab directory. Ask the user whether `.collab-config` should be git-ignored — it may contain machine-specific paths, or the user may prefer not to commit any collab system references in the code repo.
+- **Directory location** — For solo use: default `collab/` at project root, customisable name/location. For team use: the shared-knowledge path was already chosen in Step 2; the symlink in the code repo is named `collab` (not customisable — all team members must use the same symlink name for the `@collab/...` import paths in the shared instruction file to work consistently across their machines).
 - **Import placement** — Where to insert the import block in the instruction file. Options:
   - (a) At the end of the file (default — existing project instructions establish context; the collab system appends below)
   - (b) At the start of the file
   - (c) After a specific section the user indicates
-- **Git tracking** — Default: tracked. If the user prefers not to track collab files in git, add `collab/` and `.collab-config` to `.gitignore`.
+- **Git tracking** — For **solo**: default tracked (add nothing to `.gitignore`). If the user prefers not to track, add `collab/` and `.collab-config` to `.gitignore`. For **team**: the `collab` symlink must always be git-ignored (each dev creates their own). Ask the user about `.collab-config`: it can be committed (simpler — same on every machine since it only contains a relative path) or git-ignored (keeps the code repo free of any memory system traces, useful for public repos or when teams prefer full separation). If git-ignored, each dev creates `.collab-config` manually after cloning — the final installation note (see Step 9) will include the full `.collab-config` contents for easy reproduction.
 
 Wait for the user's choices before proceeding.
 
-### Step 3: Create Files
+### Step 4: Create Files
 
-Copy the template files from this repository into the target project. If the user chose a custom directory, substitute it for `collab` throughout.
+Copy the template files and set up the collab directory (and symlink for team installations).
 
-1. Copy `.collab-config` to the project root. If the user chose a custom directory, update the `collab_dir=` value to match.
+1. **Copy `.collab-config` from `/path/to/ai-collab-memory/.collab-config` to the code repo root.** Set the `collab_dir=` value to the directory name chosen in Step 3 (defaults to `collab`). For team installations, this is the symlink name in the code repo (always relative) — the symlink handles redirection to the external location.
 
-2. Copy the entire `collab/` directory recursively from the repository into the project root (e.g., `cp -r /path/to/ai-collab-memory/collab/ ./collab/`). This is a single operation — do NOT create files one by one.
+2. **Copy the `collab/` directory contents to the target location.** Use a single recursive copy — do NOT create files one by one.
+   - For **solo**: `cp -r /path/to/ai-collab-memory/collab ./collab`
+   - For **team**: first ensure the parent directory exists (`mkdir -p /path/to/shared-knowledge/collab`), then copy: `cp -r /path/to/ai-collab-memory/collab /path/to/shared-knowledge/collab/<project-name>`
 
-3. If the user opted out of git tracking, add `collab/` and `.collab-config` to the project's `.gitignore`.
+3. **For team installations, create the symlink in the code repo root:**
+   ```bash
+   ln -s /path/to/shared-knowledge/collab/<project-name> collab
+   ```
+   Use a relative path if the shared-knowledge repo is a sibling of the code repo (e.g., `../shared-knowledge/collab/<project-name>`) — this makes the symlink portable across machines that follow the same layout convention. Otherwise use an absolute path.
 
-4. **After copying**, narrate to the user what was created — briefly explain each file's purpose:
+4. **Apply git tracking choices:**
+   - For **solo** without git tracking: add `collab/` and `.collab-config` to the code repo's `.gitignore`. The trailing slash matches the directory name anywhere in the tree.
+   - For **team**: always add `/collab` to the code repo's `.gitignore` (it's a symlink at the code repo root, each dev creates their own). The leading slash anchors the entry to the repo root specifically. If the user chose to git-ignore `.collab-config`, also add it to `.gitignore`.
+
+5. **After copying**, narrate to the user what was created — briefly explain each file's purpose. Paths below use `<collab>` to denote the collab directory (actual location depends on solo/team choice; `.collab-config` is always at the code repo root):
 
    ```
-   .collab-config                → system settings (directory path, thresholds)
-   collab/.collab-memory-system  → version marker identifying this installation
-   collab/methodology.md         → your operating instructions for the memory system
-   collab/index.md               → episodic memory index — compact cue table (Tier 1, always in context)
-   collab/notes.md               → episodic memory — detailed notes (Tier 2, searched on demand)
-   collab/index-archive.md       → archived index entries after consolidation (Tier 2)
-   collab/docs/.gitkeep          → directory for long-form reference documents (Tier 2)
-   collab/world/index.md         → world model index — cue table to world knowledge (Tier 1)
-   collab/world/context.md       → personal, project, and business context (Tier 1)
-   collab/world/preferences.md   → user working preferences and communication style (Tier 1)
-   collab/world/state.md         → current mutable state — work in progress, todos (Tier 1)
-   collab/world/how-tos.md       → procedures for recurring tasks (Tier 2)
-   collab/world/domain.md        → domain-specific knowledge and decisions (Tier 2)
-   collab/world/factoids.md      → specific facts, numbers, references (Tier 2)
+   .collab-config                → system settings (directory path, thresholds), always at code repo root
+   <collab>/.collab-memory-system  → version marker identifying this installation
+   <collab>/methodology.md         → your operating instructions for the memory system
+   <collab>/index.md               → episodic memory index — compact cue table (Tier 1, always in context)
+   <collab>/notes.md               → episodic memory — detailed notes (Tier 2, searched on demand)
+   <collab>/index-archive.md       → archived index entries after consolidation (Tier 2)
+   <collab>/docs/.gitkeep          → directory for long-form reference documents (Tier 2)
+   <collab>/world/index.md         → world model index — cue table to world knowledge (Tier 1)
+   <collab>/world/context.md       → personal, project, and business context (Tier 1)
+   <collab>/world/preferences.md   → user working preferences and communication style (Tier 1)
+   <collab>/world/state.md         → current mutable state — work in progress, todos (Tier 1)
+   <collab>/world/how-tos.md       → procedures for recurring tasks (Tier 2)
+   <collab>/world/domain.md        → domain-specific knowledge and decisions (Tier 2)
+   <collab>/world/factoids.md      → specific facts, numbers, references (Tier 2)
    ```
+
+   For team installations, also narrate: "Created symlink `collab` → `<target path>` in the code repo root."
 
    If the repository was not cloned locally (e.g., files were read via web fetch), read each template file from the remote repository and create it locally.
 
-### Step 4: Configure Instruction File
+### Step 5: Configure Instruction File
 
 Insert the import block into the project's instruction file at the chosen placement (default: end of file). If no instruction file exists, create one (e.g., `CLAUDE.md`).
 
 **Never overwrite existing content.** Insert the block at the chosen position, preserving everything else.
 
-The import block (adjust `collab/` if a custom directory was chosen):
+**Before inserting, check the following:**
+
+- **Directory name:** If the user chose a custom directory name in Step 3, replace `collab/` throughout the template below with the chosen name.
+- **Import syntax:** The `@path` syntax in the template below is Claude Code-specific. For other AI platforms, ask the user how their platform handles file imports or file-inclusion, and adapt the template accordingly. The heading structure (`##` grouping) applies regardless of platform — it ensures files compose into a consistent hierarchy when loaded into context.
+- **Blank line:** If inserting at the end of an existing file, add a blank line before `<!-- collab-memory-system:start -->` to visually separate the collab block from the user's existing content.
+
+The import block template:
 
 ```markdown
 <!-- collab-memory-system:start -->
@@ -150,11 +195,7 @@ The import block (adjust `collab/` if a custom directory was chosen):
 <!-- collab-memory-system:end -->
 ```
 
-**Note on import syntax:** The `@path` syntax is Claude Code-specific. Other AI platforms use their own import or file-inclusion mechanism. The heading structure (`##` grouping, `###`/`####` content) applies regardless of platform — it ensures files compose into a consistent hierarchy when loaded into context.
-
-**If inserting at the end** of an existing file, add a blank line before `<!-- collab-memory-system:start -->` to visually separate the collab block from the user's existing content.
-
-### Step 5: Platform-Specific Setup
+### Step 6: Platform-Specific Setup
 
 #### Claude Code
 
@@ -218,7 +259,7 @@ Install the lifecycle hook and configure it in the project's settings.
 
 For platforms other than Claude Code, skip hook installation. The methodology instructions in `collab/methodology.md` are self-contained — hooks enhance the experience (timestamps, health checks, session reminders) but are not required for the core system to function. The user can add platform-specific hooks later.
 
-### Step 6: Initial World Population
+### Step 7: Initial World Population
 
 Ask the user:
 
@@ -243,25 +284,108 @@ Ask the user:
 
 **Existing documentation:** If the project has existing documentation (design docs, analysis reports, reference material), discuss with the user whether project-specific docs should be moved to `collab/docs/`. This makes the collab directory self-contained and enables simple relative references (`docs/filename.md`). Non-project docs (shared across projects, owned by other teams) should stay in their original location and be referenced with absolute paths. After moving or identifying docs, add references to them in the relevant world model files (see the doc reference convention in `methodology.md` Section 4).
 
-### Step 7: Verify Installation
+### Step 8: Verify Installation
 
-Run through this checklist and report results to the user:
+Run through this checklist and report results to the user. Paths use `<collab>` for the collab directory (actual location depends on solo/team choice):
 
-- [ ] `.collab-config` exists at project root
-- [ ] `collab/.collab-memory-system` exists and contains a version string
+- [ ] `.collab-config` exists at code repo root
+- [ ] For team installations: `collab` symlink exists at code repo root and resolves to the external target
+- [ ] `<collab>/.collab-memory-system` exists and contains a version string
 - [ ] All 11 collab files exist (`methodology.md`, `index.md`, `index-archive.md`, `notes.md`, and 7 world files)
-- [ ] `collab/docs/` directory exists
+- [ ] `<collab>/docs/` directory exists
 - [ ] Instruction file contains the import block between `<!-- collab-memory-system:start -->` and `<!-- collab-memory-system:end -->` markers
 - [ ] (Claude Code) Hook script exists at `.claude/hooks/collab-memory-hook.sh` and is executable
 - [ ] (Claude Code) `.claude/settings.json` contains hook entries for `SessionStart` and `UserPromptSubmit`
-
-If all checks pass, inform the user:
-
-> "The collaboration memory system is installed. It will become active when you start a new session — the methodology, memory files, and hooks will load automatically at that point. The system will build up knowledge naturally as we collaborate."
+- [ ] `.gitignore` entries correct: solo without tracking → `collab/` + `.collab-config`; team → `/collab` + (optionally `.collab-config`)
 
 If any checks fail, report which ones and ask the user how to proceed. For issues that cannot be resolved, the user can file an issue at https://github.com/visionscaper/ai-collab-memory/issues.
 
-### Step 8: Migrate Existing Notes (if applicable)
+Continue to Step 9 if all checks pass.
+
+### Step 9: Record Installation Note
+
+Write the first episodic note documenting the installation. This serves three purposes: it creates an audit trail, demonstrates the memory system's note-writing behaviour, and provides a diagnostic anchor to verify the system works in a new session.
+
+**First, read `<collab>/methodology.md` if you haven't already.** It defines the note template, the amendment protocol, the index entry conventions ("concise contextualized facts"), and the append-only rule for episodic memory. The templates below match the methodology conventions at the time of writing, but the methodology is the source of truth.
+
+Append a note to `<collab>/notes.md` (append to the bottom — episodic memory is append-only; use today's date). The template below shows the minimum to capture; expand any section with more detail as relevant — this is a real note, not a form:
+
+```
+---
+
+### [DD-MM-YYYY] Collaboration Memory System Installed
+
+**With:** @<username> (use `git config user.name` by default; if unclear or empty, ask the user)
+
+**Context:** Initial installation of the ai-collab-memory system on this project. Describe briefly why the user wanted the memory system and any relevant project/team context.
+
+**What We Did:**
+- Installed ai-collab-memory version <vX.X> (from `<collab>/.collab-memory-system`)
+- Installation type: <solo | team>
+- Collab directory location: <actual path, e.g. `./collab/` or `/path/to/shared-knowledge/collab/project-x/`>
+- For team installations: symlink `collab` → `<target>` created in code repo root
+- Import placement: <at end of file | at start | after specific section> in <instruction file name>
+- Git tracking: `.collab-config` <committed | git-ignored>; collab directory <tracked | git-ignored | external repo>
+- Hooks installed: <yes (Claude Code: SessionStart, UserPromptSubmit) | skipped (other platform)>
+- Hook overlap handling: <none | integrated | kept both | replaced>
+- Initial world population: <done | skipped>. If done, summarise what kinds of context the user provided and which world files were populated.
+- Anything else relevant: issues encountered and how they were resolved, user decisions made during install, deviations from defaults.
+
+**`.collab-config` contents:**
+```
+<paste actual file contents here>
+```
+
+**Key Learnings:**
+- Memory system is now active and will load automatically on new sessions.
+- <For team:> Other team members who clone this code repo later will need to create their own `collab` symlink.
+- Add any other observations: what worked smoothly, what caused friction, what the user should know going forward.
+
+**Related:** `collab/methodology.md`, `collab/.collab-memory-system`
+```
+
+Also add the corresponding index entry to `<collab>/index.md`:
+
+```
+| DD-MM-YYYY | @<username> | Collaboration Memory System Installed | Initial ai-collab-memory installation: <solo/team>, hooks, world population status. First episodic note and index entry. | installation, setup, v<X.X>, <solo/team> |
+```
+
+**Final message to the user** (if Step 1 identified an existing notes/journaling system, do not yet declare the installation complete — continue to Step 10 first, then combine this message with the migration outcome):
+
+> "The collaboration memory system is installed and a first note has been written. It will become active in a new session — the methodology, memory files, and hooks will load automatically. The system will build up knowledge naturally as we collaborate.
+>
+> **To verify it's working:** Start a new session and ask one of:
+> - 'What kinds of AI collab memory do you have and how do they work?' — tests that the methodology is loaded.
+> - 'What do you know about this project?' — tests that the world model is loaded (if you did world population).
+> - 'What is the last thing we did?' — tests that the episodic index is loaded. The AI should mention the installation note."
+
+**For team installations, include these additional instructions in the final message:**
+
+> "Your symlink is already set up. For any other team member who clones this code repo later, they will need to create their own `collab` symlink after cloning. Commands:
+>
+> **macOS/Linux:**
+> ```bash
+> ln -s <relative or absolute path to shared-knowledge/collab/project-name> collab
+> ```
+>
+> **Windows (PowerShell, requires developer mode or admin):**
+> ```powershell
+> New-Item -ItemType SymbolicLink -Path collab -Target <path to shared-knowledge/collab/project-name>
+> ```
+>
+> **Windows (cmd, requires admin):**
+> ```cmd
+> mklink /D collab <path to shared-knowledge\collab\project-name>
+> ```
+
+**If `.collab-config` is git-ignored, also include its contents in the final message** so each dev can easily reproduce it:
+
+> "Since `.collab-config` is git-ignored, each dev also needs to create it in the code repo root. Contents:
+> ```
+> <paste actual .collab-config contents here>
+> ```"
+
+### Step 10: Migrate Existing Notes (if applicable)
 
 If Step 1 identified an existing notes or journaling system, discuss migration with the user:
 
@@ -293,3 +417,5 @@ This helps any AI session understand which system is authoritative during the mi
    - **Don't forget to update `world/index.md` when Tier 2 world files change.**
 
 5. **Track progress** — For large note sets that may span multiple sessions, record migration progress in `world/state.md` (e.g., "Migration: 45/184 notes done"). This is Tier 1, so the next session sees it immediately and can continue where you left off.
+
+6. **Write a migration note when complete** — Once migration finishes (or at the end of each migration session if multi-session), append an episodic note to `<collab>/notes.md` capturing what was migrated, any decisions made, issues encountered, and learnings. This creates a historical record of the migration alongside the migrated content. Follow the note template from methodology Section 3; include the corresponding index entry in `<collab>/index.md`.

@@ -19,7 +19,7 @@ No databases, no vector stores, no infrastructure. Just files and a methodology 
 
 ## Help Us Improve This System
 
-**Status:** v1.4 — we are actively testing and developing this. The episodic memory (notes, index) is the more mature component; the world model memory is functional but earlier in its development. We welcome you to try it and share your experience — what worked, what didn't, what's missing. Your feedback directly shapes what we build next. File issues or experience reports at https://github.com/visionscaper/ai-collab-memory/issues.
+**Status:** v1.5 — we are actively testing and developing this. The episodic memory (notes, index) is the more mature component; the world model memory is functional but earlier in its development. We welcome you to try it and share your experience — what worked, what didn't, what's missing. Your feedback directly shapes what we build next. File issues or experience reports at https://github.com/visionscaper/ai-collab-memory/issues.
 
 All testing and development so far has been done using Claude Opus 4.6. This system relies on the AI's ability to follow nuanced instructions, maintain context awareness, and make judgement calls about when to write notes and update the world model — capabilities that may not be available in smaller or less powerful models.
 
@@ -48,7 +48,7 @@ collab/
 
 Imports are added to the project's instruction file (e.g., `CLAUDE.md`, `.cursorrules`) so the AI loads memory automatically. Platform-specific lifecycle hooks are installed where supported (currently Claude Code).
 
-All files are git-tracked. Nothing is hidden or opaque.
+All files are git-tracked (in the code repo for solo installations, or in the shared-knowledge repo for team installations — see "Distributed Collaboration" below). Nothing is hidden or opaque.
 
 ## How to Install
 
@@ -142,6 +142,25 @@ When details are needed, the AI uses a deterministic **index → search → read
 ### Multi-User Support
 
 The system is designed for teams from the ground up. Every note and index entry includes user attribution. World model files use per-user sections where appropriate (personal context, preferences, current work), allowing git to auto-merge changes from different users. A merge resolution protocol handles conflicts in shared world files.
+
+### Distributed Collaboration
+
+An interesting use case of this memory system is building up shared memory in a team or organisation. Each team member contributes to the same episodic history and world model; new members get up to speed through the AI's accumulated knowledge; cross-project learnings can be referenced.
+
+**Why memory often shouldn't live in the same repo as the code:**
+
+- **Branch divergence** — developers on long-lived branches diverge from the memory on main; merge conflicts accumulate as work progresses.
+- **Public repos** — project decisions, business context, user preferences, and strategic discussions shouldn't be publicly visible.
+- **Access control** — team members may have different access to different projects; per-project memory isolation matters.
+- **Repo churn** — code changes often don't warrant memory updates; mixing them clutters PR history.
+- **Memory as first-class history** — memory changes deserve their own commit history and review flow, separate from code.
+
+**Two patterns for distributed memory:**
+
+- **Single shared-knowledge repo** — one repo containing all projects, e.g. `shared-knowledge/collab/project-x/`, `shared-knowledge/collab/project-y/`. The top-level `collab/` directory groups all collab memory, leaving room for other organisational content (architecture docs, team playbooks, policies) alongside it. Centralises team knowledge, simplifies cross-project awareness, single ACL to manage. Good default for most teams.
+- **Per-project memory repo** — one memory repo per project. Use this when different projects have different teams with different access levels, or when projects must stay fully isolated (e.g., client confidentiality, regulatory boundaries).
+
+In both patterns, the code repo contains a symlink named `collab` (git-ignored; each dev creates their own) pointing to the external memory directory. This keeps `.collab-config`, the import block, and all `@collab/...` paths identical between solo and team installations. The installation procedure guides the user through the team/solo decision, repo setup (including `gh` assistance if available), and symlink creation.
 
 ### Behavioral Triggers
 

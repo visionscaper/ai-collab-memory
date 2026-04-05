@@ -1,5 +1,27 @@
 # Release Notes
 
+## v1.5
+
+**Changes since v1.4 (commit `5ca107a`):**
+
+- **README.md**: New "Distributed Collaboration" subsection under "How It Works" — explains team memory use case, why memory shouldn't live in the code repo (branch divergence, public repos, access control, repo churn, memory as first-class history), and two patterns (single shared-knowledge repo vs. per-project memory repo). Clarified "all files git-tracked" note to account for external shared-knowledge repo case.
+- **install.md**: Major restructure for team/solo distinction:
+  - New Step 2 (Solo or Team Use?) with user-facing explanation of what each choice means
+  - New Step 3 (Confirm Installation Details) — now summarises Step 1/2 findings before asking for confirmation
+  - Old Step 2/3 merged — customisation options updated for solo vs team cases
+  - Symlink-based team pattern: `collab` symlink in code repo points to external shared-knowledge location, git-ignored, each dev creates their own after cloning
+  - `.collab-config` always uses `collab_dir=collab` (relative) for both solo and team — symlink handles redirection
+  - Optional `gh` assistance for creating new shared-knowledge repos
+  - New Step 9 (Record Installation Note) — writes first episodic note with installation details and `.collab-config` contents, provides diagnostic test questions for new sessions
+  - Symlink setup instructions for macOS/Linux, Windows PowerShell, Windows cmd
+  - Step 10 (Migrate Existing Notes) — added migration note as step 6 of the migration procedure
+  - Multiple clarity improvements from external review: import block caveats moved before template, platform-specific import guidance, `@<username>` derivation, gitignore asymmetry explanation, final message now conditional on migration step
+- No changes to installed files (methodology, hooks, templates). Existing installations don't need to update anything.
+
+**Upgrade from v1.4:**
+
+No changes to installed files. Only update `collab/.collab-memory-system` to `v1.5`.
+
 ## v1.4
 
 **Changes since v1.3 (commit `755edf2`):**
