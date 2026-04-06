@@ -166,11 +166,16 @@ Insert the import block into the project's instruction file at the chosen placem
 
 **Before inserting, check the following:**
 
+- **Import path resolution — CRITICAL:** Import paths (e.g., `@collab/methodology.md`) resolve **relative to the instruction file where they appear**, not relative to the project root. If the instruction file is at the project root (e.g., `./CLAUDE.md`), then `@collab/...` correctly reaches `./collab/...`. If the instruction file is in a subdirectory (e.g., `.claude/CLAUDE.md`), then `@collab/...` would look for `.claude/collab/...` which does not exist — **the import silently fails and no content is loaded**. Adjust the paths based on the instruction file's location:
+  - Instruction file at project root (`./CLAUDE.md`): use `@collab/...` as in the template below
+  - Instruction file in `.claude/` (`.claude/CLAUDE.md`): use `@../collab/...` — the `../` navigates up from `.claude/` to the project root where `collab/` lives (as a real directory or symlink)
+  - Instruction file in another location of the repo: adjust the relative path accordingly so it navigates from the instruction file's directory to the `collab/` directory
+  - **External collab directory (outside the repo root):** Relative paths cannot reach outside the repository root — this is a security restriction. Use absolute paths instead (e.g., `@~/workspace/shared-knowledge/collab/project-x/methodology.md`). Note that absolute paths are not portable across machines or team members — each developer would need their own instruction file (git-ignored) with their local absolute paths. The symlink approach (see Step 2) avoids this by keeping the collab directory reachable via a relative path within the repo.
 - **Directory name:** If the user chose a custom directory name in Step 3, replace `collab/` throughout the template below with the chosen name.
 - **Import syntax:** The `@path` syntax in the template below is Claude Code-specific. For other AI platforms, ask the user how their platform handles file imports or file-inclusion, and adapt the template accordingly. The heading structure (`##` grouping) applies regardless of platform — it ensures files compose into a consistent hierarchy when loaded into context.
 - **Blank line:** If inserting at the end of an existing file, add a blank line before `<!-- collab-memory-system:start -->` to visually separate the collab block from the user's existing content.
 
-The import block template:
+The import block template (paths shown for instruction file at project root — adjust as described above):
 
 ```markdown
 <!-- collab-memory-system:start -->

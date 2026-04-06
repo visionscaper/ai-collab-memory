@@ -1,5 +1,18 @@
 # Release Notes
 
+## v1.6
+
+**Changes since v1.5 (commit `8971752`):**
+
+- **README.md**: Introduction sharpened with session continuity vs cumulative collaborative understanding framing — concrete critique of tool-execution-trace memory, emphasis on discussion-centric knowledge and conceptual understanding that compounds. "What Makes This Different" section: new first bullet on collaborative knowledge vs session continuity, enriched platform-independence bullet (plain text as portable raw material). "Working with the Memory System": added elaborate docs tip for `collab/docs/`. "No automatic reflection" limitation updated — now architecturally viable via Stop hook + transcript_path + Agent SDK subagent. "What Gets Installed" moved after "How to Upgrade" and Tier 1/Tier 2 labels added to file tree. "Requirements and Compatibility" broadened: git recommended not required, any AI with file access works, Claude Cowork mentioned as likely compatible.
+- **install.md**: Critical fix for import path resolution — documented that `@path` imports resolve relative to the instruction file's location, not the project root. If CLAUDE.md is in `.claude/`, paths must use `@../collab/...` to reach the project root. Imports from outside the repo root require absolute paths (security restriction). Added guidance for all cases: project root, `.claude/`, other locations, external collab directory.
+- No changes to installed files (methodology, hooks, templates). Existing installations should verify their import paths resolve correctly (see install.md Step 5).
+
+**Upgrade from v1.5:**
+
+1. Verify your import paths: if your instruction file is in `.claude/` and uses `@collab/...` paths, these are silently failing. Change to `@../collab/...` or use absolute paths for external collab directories.
+2. Update `collab/.collab-memory-system` to `v1.6`.
+
 ## v1.5
 
 **Changes since v1.4 (commit `5ca107a`):**
