@@ -23,33 +23,6 @@ No databases, no vector stores, no infrastructure. Just files and a methodology 
 
 All testing and development so far has been done using Claude Opus 4.6. This system relies on the AI's ability to follow nuanced instructions, maintain context awareness, and make judgement calls about when to write notes and update the world model — capabilities that may not be available in smaller or less powerful models.
 
-## What Gets Installed
-
-The system adds a collaboration directory (default `collab/`) to the project:
-
-```
-.collab-config                  ← system settings (at project root)
-collab/
-├── .collab-memory-system       ← version marker
-├── methodology.md              ← AI operating instructions
-├── index.md                    ← episodic memory index (compact cue table)
-├── notes.md                    ← episodic memory (detailed notes)
-├── index-archive.md            ← archived index entries (after consolidation)
-├── docs/                       ← long-form reference documents
-└── world/
-    ├── index.md                ← world model index (cue table)
-    ├── context.md              ← personal, project, business context
-    ├── preferences.md          ← user working preferences
-    ├── state.md                ← current work in progress, todos, blockers
-    ├── how-tos.md              ← procedures for recurring tasks
-    ├── domain.md               ← domain-specific knowledge
-    └── factoids.md             ← specific facts, numbers, references
-```
-
-Imports are added to the project's instruction file (e.g., `CLAUDE.md`, `.cursorrules`) so the AI loads memory automatically. Platform-specific lifecycle hooks are installed where supported (currently Claude Code).
-
-All files are git-tracked (in the code repo for solo installations, or in the shared-knowledge repo for team installations — see "Distributed Collaboration" below). Nothing is hidden or opaque.
-
 ## How to Install
 
 ### For AI Assistants
@@ -85,6 +58,33 @@ Ask your AI assistant:
 > "Upgrade the collaboration memory system by cloning https://github.com/visionscaper/ai-collab-memory to a temporary location and following the upgrade instructions in it."
 
 The AI will compare your installed version with the latest, read the release notes, and apply the differences. Your notes, world model, and accumulated knowledge are never modified during an upgrade — only system files (methodology, hooks, configuration) are updated. In rare cases where memory data needs to be adapted to a new version, the AI will discuss the changes with you and ask for approval before making any modifications.
+
+## What Gets Installed
+
+The system adds a collaboration directory (default `collab/`) to the project:
+
+```
+.collab-config                  ← system settings (at project root)
+collab/
+├── .collab-memory-system       ← version marker
+├── methodology.md              ← AI operating instructions
+├── index.md                    ← episodic memory index (Tier 1 — always in context)
+├── notes.md                    ← episodic memory (Tier 2 — searched on demand)
+├── index-archive.md            ← archived index entries (Tier 2)
+├── docs/                       ← long-form reference documents (Tier 2)
+└── world/
+    ├── index.md                ← world model index (Tier 1)
+    ├── context.md              ← personal, project, business context (Tier 1)
+    ├── preferences.md          ← user working preferences (Tier 1)
+    ├── state.md                ← current work in progress, todos, blockers (Tier 1)
+    ├── how-tos.md              ← procedures for recurring tasks (Tier 2)
+    ├── domain.md               ← domain-specific knowledge (Tier 2)
+    └── factoids.md             ← specific facts, numbers, references (Tier 2)
+```
+
+Imports are added to the project's instruction file (e.g., `CLAUDE.md`, `.cursorrules`) so the AI loads memory automatically. Platform-specific lifecycle hooks are installed where supported (currently Claude Code).
+
+All files are git-tracked (in the code repo for solo installations, or in the shared-knowledge repo for team installations — see "Distributed Collaboration" below). Nothing is hidden or opaque.
 
 ## Working with the Memory System
 
@@ -195,8 +195,8 @@ These distinctions compound over time. The longer the collaboration, the more va
 ## Requirements and Compatibility
 
 **Prerequisites:**
-- A git-tracked project
-- An AI assistant that supports an instruction file mechanism (e.g., CLAUDE.md, .cursorrules)
+- An AI assistant that can read and write local files and load an instruction file into context (e.g., CLAUDE.md, `.cursorrules`)
+- Git is recommended for version control and auditability, but not a hard requirement — the system works without it if you prefer to keep everything local
 
 **Platform support:**
 
@@ -205,7 +205,7 @@ These distinctions compound over time. The longer the collaboration, the more va
 | Claude Code | Full support | SessionStart, UserPromptSubmit |
 | Other AI assistants | Full support (methodology is self-contained) | Not yet available — hooks enhance but are not required |
 
-The core methodology works with any AI assistant that can read and write files and load an instruction file into context. Hooks add session management (timestamps, health checks, context recovery reminders) but are optional.
+The core methodology works with any AI assistant that can read and write files across sessions and load an instruction file into context. This includes CLI tools (Claude Code), IDE integrations, and web-based AI assistants with file access (e.g., Claude Cowork — untested but likely compatible). Hooks add session management (timestamps, health checks, context recovery reminders) but are optional.
 
 ## Current Limitations and Status
 
