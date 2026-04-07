@@ -13,31 +13,6 @@ Through the use of in-context memory index files, the AI can maintain a global a
 The system can, in principle, be integrated into any AI system, but so far it has been optimised for use 
 with Claude Code.
 
-## Introduction
-
-In order to collaborate long-term with AI in an effective way, there needs to be a shared conceptual understanding about:
- * history (episodic memory): what has been done, why, how and what decisions were made over time? What did we learn?
- * reality (world model): what is the context of the work being done, what is the project about, for what business, why?
-   What is the current state of the work? How should the work be done in general, what are the guidelines and preferences? 
-   What are the constraints? Etc.
-
-Without this kind of conceptual knowledge, AI can't do its work effectively, especially over long periods, 
-i.e. weeks, months, or even years. It would need to rediscover information at every session. 
-Further, without all this context it would not effectively respond or make optimal choices when working 
-(e.g. when writing code or creating a design). 
-
-ai-collab-memory enables the build-up of **Episodic memory** and a **World model** over time.
-Entries in this memory are summarized in an index which is always in the AI context window, allowing the model to have a 
-global **awareness** of everything that is in the memory. This allows it to cross-correlate knowledge in this memory 
-and to know where to find details from memory entries.
-
-While collaborating, you can ask the AI to suggest entries for the episodic memory or for the world model; if you agree 
-with the contents of the suggested entries they will be added to memory, and the related summaries are added to the 
-index files. In this way a high-quality memory with conceptual knowledge is built up over time.
-
-ai-collab-memory has a methodology to ensure that episodic or world model memory is never lost. See the section
-"How It Works" for more details.
-
 ## Help Us Improve This System
 
 **Status:** v1.6 — we are actively testing and developing this. The episodic memory (notes, index) is the more mature component; the world model memory is functional but earlier in its development. We welcome you to try it and share your experience — what worked, what didn't, what's missing. Your feedback directly shapes what we build next. File issues or experience reports at https://github.com/visionscaper/ai-collab-memory/issues.
@@ -106,6 +81,31 @@ collab/
 Imports are added to the project's instruction file (e.g., `CLAUDE.md`, `.cursorrules`) so the AI loads memory automatically. Platform-specific lifecycle hooks are installed where supported (currently Claude Code).
 
 All files are git-tracked (in the code repo for solo installations, or in the shared-knowledge repo for team installations — see "Distributed Collaboration" below). Nothing is hidden or opaque.
+
+## Introduction
+
+In order to collaborate long-term with AI in an effective way, there needs to be a shared conceptual understanding about:
+ * history (episodic memory): what has been done, why, how and what decisions were made over time? What did we learn?
+ * reality (world model): what is the context of the work being done, what is the project about, for what business, why?
+   What is the current state of the work? How should the work be done in general, what are the guidelines and preferences?
+   What are the constraints? Etc.
+
+Without this kind of conceptual knowledge, AI can't do its work effectively, especially over long periods,
+i.e. weeks, months, or even years. It would need to rediscover information at every session.
+Further, without all this context it would not effectively respond or make optimal choices when working
+(e.g. when writing code or creating a design).
+
+ai-collab-memory enables the build-up of **Episodic memory** and a **World model** over time.
+Entries in this memory are summarized in an index which is always in the AI context window, allowing the model to have a
+global **awareness** of everything that is in the memory. This allows it to cross-correlate knowledge in this memory
+and to know where to find details from memory entries.
+
+While collaborating, you can ask the AI to suggest entries for the episodic memory or for the world model; if you agree
+with the contents of the suggested entries they will be added to memory, and the related summaries are added to the
+index files. In this way a high-quality memory with conceptual knowledge is built up over time.
+
+ai-collab-memory has a methodology to ensure that episodic or world model memory is never lost. See the section
+"How It Works" for more details.
 
 ## Working with the Memory System
 
