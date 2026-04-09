@@ -108,6 +108,15 @@ When compaction is imminent:
 2. Update `world/state.md` with current state
 3. Ensure the Episodic Memory Index (`index.md`) and the World Model Index (`world/index.md`) are up to date
 
+#### Post-update Verification
+
+After completing any memory update, verify:
+
+1. If `state.md` items were resolved or removed: episodic note + index entry was written recording what was completed (see State Management in the World Model Protocol)
+2. If any Tier 2 world file was updated (`world/domain.md`, `world/how-tos.md`, `world/factoids.md`): `world/index.md` was updated to reflect the change (see Writing World Model Index Entries in the World Model Protocol)
+3. If a note or world model update relates to a document in `docs/`: the document is referenced from the note or relevant world model entry
+4. Every episodic note has a corresponding row in the Episodic Memory Index (`index.md`)
+
 ### 4. maintainmem — Maintaining and Consolidating Memory
 
 When the user includes `maintainmem` in their message, you MUST evaluate whether memory maintenance is needed — index consolidation, world model compaction, or both.
@@ -253,7 +262,7 @@ The "When to check" column is the cue mechanism — it matches user intent to wo
 - Todo items
 
 **Cleanup rules:**
-- Remove items when they are resolved — resolved work belongs in episodic notes, not in state.md
+- When resolving or removing items: you MUST write an episodic note + index entry recording what was completed. Even mechanical work produces real changes — without a note, future sessions have no record that the work happened. Only then remove the item from state.md.
 - Review for accuracy at the end of each session
 - Add sections as needed — the structure is flexible, defined by current needs
 

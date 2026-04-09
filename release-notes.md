@@ -1,5 +1,16 @@
 # Release Notes
 
+## v1.7.1
+
+**Changes since v1.7 (commit `350b90d`):**
+
+- **collab/methodology.md**: State Management cleanup rule strengthened — resolving or removing `state.md` items now requires (MUST) writing an episodic note + index entry before removal. New "Post-update Verification" subsection in updatemem (Section 3) — four-item checklist: state resolution note, Tier 2 world index update (explicitly lists `world/domain.md`, `world/how-tos.md`, `world/factoids.md`), doc references, and episodic index entry. Makes updatemem self-contained so the AI doesn't need to remember cross-references to Section 6 during execution.
+
+**Upgrade from v1.7:**
+
+1. Copy `collab/methodology.md` from the new version (or apply the two changes: strengthened State Management cleanup rule, new Post-update Verification subsection in Section 3).
+2. Update `collab/.collab-memory-system` to `v1.7.1`.
+
 ## v1.7
 
 **Changes since v1.6 (commit `c56aacc`):**
