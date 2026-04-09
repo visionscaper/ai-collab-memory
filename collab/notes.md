@@ -1,1 +1,1 @@
-<!-- Append-only episodic memory. See methodology.md Section 3 for the note template and rules. -->
+<!-- Append-only episodic memory. See Notes Protocol (Episodic Memory) in methodology.md for the note template and rules. -->

@@ -1,6 +1,6 @@
 ### Current State
 
-<!-- Mutable — update frequently, remove items when resolved. See methodology.md Section 6. -->
+<!-- Mutable — update frequently, remove items when resolved. See State Management in methodology.md. -->
 
 #### Current Work
 

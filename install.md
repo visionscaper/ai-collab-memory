@@ -285,9 +285,9 @@ Ask the user:
 - Replace the HTML comment placeholders with the actual content, keeping the section headings
 - Show the user what you wrote in each file
 
-**If the user skips:** leave the template files as they are. The behavioral triggers in the methodology will populate these files organically during normal collaboration.
+**If the user skips:** leave the template files as they are. The word cues and conceptual triggers in the methodology will help populate these files organically during normal collaboration.
 
-**Existing documentation:** If the project has existing documentation (design docs, analysis reports, reference material), discuss with the user whether project-specific docs should be moved to `collab/docs/`. This makes the collab directory self-contained and enables simple relative references (`docs/filename.md`). Non-project docs (shared across projects, owned by other teams) should stay in their original location and be referenced with absolute paths. After moving or identifying docs, add references to them in the relevant world model files (see the doc reference convention in `methodology.md` Section 4).
+**Existing documentation:** If the project has existing documentation (design docs, analysis reports, reference material), discuss with the user whether project-specific docs should be moved to `collab/docs/`. This makes the collab directory self-contained and enables simple relative references (`docs/filename.md`). Non-project docs (shared across projects, owned by other teams) should stay in their original location and be referenced with absolute paths. After moving or identifying docs, add references to them in the relevant world model files (see the doc reference convention in the World Model Protocol in `methodology.md`).
 
 ### Step 8: Verify Installation
 
@@ -423,4 +423,4 @@ This helps any AI session understand which system is authoritative during the mi
 
 5. **Track progress** — For large note sets that may span multiple sessions, record migration progress in `world/state.md` (e.g., "Migration: 45/184 notes done"). This is Tier 1, so the next session sees it immediately and can continue where you left off.
 
-6. **Write a migration note when complete** — Once migration finishes (or at the end of each migration session if multi-session), append an episodic note to `<collab>/notes.md` capturing what was migrated, any decisions made, issues encountered, and learnings. This creates a historical record of the migration alongside the migrated content. Follow the note template from methodology Section 3; include the corresponding index entry in `<collab>/index.md`.
+6. **Write a migration note when complete** — Once migration finishes (or at the end of each migration session if multi-session), append an episodic note to `<collab>/notes.md` capturing what was migrated, any decisions made, issues encountered, and learnings. This creates a historical record of the migration alongside the migrated content. Follow the note template from the Notes Protocol in `methodology.md`; include the corresponding index entry in `<collab>/index.md`.

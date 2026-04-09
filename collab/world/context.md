@@ -1,6 +1,6 @@
 ### Context
 
-<!-- Tier 1 — ~5,000 char cap. See methodology.md Section 4. -->
+<!-- Tier 1 — ~5,000 char cap. See World Model Protocol in methodology.md. -->
 
 #### Personal
 
