@@ -36,7 +36,7 @@ When the user includes `readmem` in their message, you MUST read relevant inform
 **Triggers to read from memory — three levels:**
 
 1. **Sentinel token (MUST):** The user includes `readmem` in their message
-2. **Word cues (SHOULD):** The message mentions context, background, history, previous, earlier, last time, before, recall, remind, read memory
+2. **Word cues (SHOULD):** The message mentions context, background, history, previous, earlier, last time, before, recall, remind, read memory, new session
 3. **Conceptual (SHOULD):** The task requires context that isn't in the current conversation — history on the topic, prior decisions, established patterns, domain knowledge, or project state, etc.
 
 **How to read:**
@@ -85,7 +85,7 @@ The purpose of updating memory is to build up a shared conceptual understanding 
 **Triggers to update memory — three levels:**
 
 1. **Sentinel token (MUST):** The user includes `updatemem` in their message
-2. **Word cues (SHOULD):** The message or conversation mentions done, completed, decided, learned, concluded, failed, resolved, designed, planned, ready, committed, pushed, correction, insight, update memory, let's capture this, write a note
+2. **Word cues (SHOULD):** The message or conversation mentions done, completed, decided, learned, concluded, failed, resolved, designed, planned, ready, committed, pushed, correction, insight, update memory, let's capture this, write a note, compaction, session ending, end of session
 3. **Conceptual (SHOULD):** A non-trivial logical unit of work has concluded — a discussion that produced decisions and/or learnings, a design, or conclusions; a piece of implementation was completed (feature, fix, refactor, investigation); the user shared context, preferences, or corrected your understanding
 
 **What to consider capturing:**

@@ -100,44 +100,42 @@ Entries in this memory are summarized in an index which is always in the AI cont
 global **awareness** of everything that is in the memory. This allows it to cross-correlate knowledge in this memory
 and to know where to find details from memory entries.
 
-While collaborating, you can ask the AI to suggest entries for the episodic memory or for the world model; if you agree
-with the contents of the suggested entries they will be added to memory, and the related summaries are added to the
-index files. In this way a high-quality memory with conceptual knowledge is built up over time.
+The system uses three sentinel tokens — `readmem`, `updatemem`, and `maintainmem` — as the primary way to interact with memory. Include them in your message to the AI to trigger reading from memory, updating it, or maintaining it. The AI proposes what to read or write; you approve. In this way a high-quality memory with conceptual knowledge is built up over time. And we keep the memory system simple, without needing custom agentic AI solutions or infrastructure.
 
 ai-collab-memory has a methodology to ensure that episodic or world model memory is never lost. See the section
 "How It Works" for more details.
 
 ## Working with the Memory System
 
-You, as the user, know best when something important was discussed, decided, or learned. Prompting the AI for memory updates at natural checkpoints is the most reliable way to keep the memory system current and useful:
+The system provides three sentinel tokens for interacting with memory — include them in your message to trigger the corresponding operation:
 
-- After a discussion that produced decisions, a design, or a plan
-- After completing a piece of work (feature, fix, refactor, investigation)
-- Before committing non-trivial changes
-- When you've shared context, preferences, or corrections that should be remembered
-- At the end of a session
+- **`readmem`** — Read relevant information from memory before handling a task. Use when you need background, history, or context from prior work.
+- **`updatemem`** — Evaluate what should be captured in memory — as a note, a world model update, or both. Use after discussions that produced decisions or learnings, after completing work, or when you've shared context that should be remembered.
+- **`maintainmem`** — Evaluate whether memory maintenance is needed — consolidating old index entries into the world model, or compacting world files that have grown too large.
 
-The methodology instructs the AI to proactively propose notes and world model updates, but in practice this is unreliable 
-— especially during focused execution. Technical solutions exist to remedy this issue, but they require customization of
-the AI system in use. We might solve this in future versions.
+**Example usage:**
 
-**So, don't rely on the AI to suggest updates — prompt for them yourself when the moment is right.**
+> Fix the auth bug in the login flow. readmem
 
-**Example prompts:**
+> That went well, we're done. updatemem
 
-> Please write a note about what we did, learned, and/or decided. Include an index entry as well.
+> The index is getting long. maintainmem
 
-> Please update the world model with relevant knowledge from what we did, learned, and decided. Update the world model index too if you changed any Tier 2 files.
+The methodology defines three levels of triggers that can activate memory operations:
 
-> Please update the current state with what we're working on and any open items.
+1. **Sentinel tokens (strongest guarantee)** — When `readmem`, `updatemem`, or `maintainmem` is present in your message, the AI MUST perform the operation.
+2. **Word cues** — Words like "done", "decided", "background", "history" may prompt the AI to read from or update memory without an explicit sentinel token.
+3. **Conceptual triggers** — The AI is instructed to recognise situations where memory operations are appropriate, such as when a logical unit of work concludes.
 
-These are examples — phrase them however feels natural. The AI understands the underlying system and will route information to the right files.
+The word-level and conceptual triggers allow the AI to act on its own, but in practice automatic triggering is unreliable during focused execution due to attention drift. The sentinel tokens solve this — they're the reliable mechanism you can always count on.
+
+This design means the system works with any AI assistant that can read and write local files — no custom agentic infrastructure required. The sentinel tokens are just words in your message that the AI's methodology tells it to act on. Building a customised agentic system where detection of these triggers is more automated is future work.
 
 **Elaborate documents for significant work:** When a discussion or investigation produces rich, detailed content — an analysis, a design, a comparison study — ask the AI to write it as a standalone document in `collab/docs/`. The note and/or world model entry can then reference the document rather than trying to compress everything into a note. This keeps notes concise while preserving depth where it matters.
 
 ### IMPORTANT: Watch for automatic context compaction
 
-AI systems such as Claude Code don't know how much context window space remains before auto-compaction occurs. When compaction happens, session details are lost — only the memory system's files preserve what was discussed and decided. When you notice the context window space is getting low, ask the AI to write a note capturing current session state — decisions made, work in progress, open questions. This is your best insurance against losing session context.
+AI systems such as Claude Code don't know how much context window space remains before auto-compaction occurs. When compaction happens, session details are lost — only the memory system's files preserve what was discussed and decided. When you notice the context window space is getting low, tell the AI: "compaction soon, updatemem". This is your best insurance against losing session context.
 
 ## How It Works
 
@@ -164,7 +162,7 @@ Most memory tools treat recall as a retrieval problem: store knowledge somewhere
 
 ai-collab-memory takes a different approach. The Tier 1 indexes — compact tables of past episodes and world knowledge — are always loaded in the AI's context window. Because the AI's attention mechanism matches query tokens against context tokens, these indexes create continuous **awareness** of accumulated knowledge. The AI can make associations and connections to prior work without an explicit search query — it knows a topic exists before it needs to look it up.
 
-When details are needed, the AI uses a deterministic **index → search → read** pattern: find the relevant index entry, grep the target file, read only the relevant section. No vector search, no embeddings — just structured text and grep.
+When details are needed, the AI uses a precise **index → search → read** pattern: find the relevant index entry, grep the target file, read only the relevant section. No vector search, no embeddings — just structured text and grep.
 
 ### Multi-User Support
 
@@ -212,7 +210,7 @@ What differentiates ai-collab-memory:
 - **User-verified knowledge quality.** Automated memory extraction captures what the model *thinks* is important. User-reviewed memory captures what *actually* is important — the user knows their own context, priorities, and what matters for the work. Notes require user approval. World model updates are visible and editable. This produces more accurate, more relevant knowledge that stays aligned with reality.
 - **History preserved, not pruned away.** Episodic memory is append-only — the historical record is never rewritten. The world model is maintained separately — rewritten to reflect current reality. This separation means you can trace back to why a decision was made months ago, what alternatives were considered, and how understanding evolved.
 - **Multi-user collaboration by default.** Every note includes user attribution. World model files use per-user sections for git-friendly concurrent collaboration. Merge resolution is built into the methodology. Platform-native memory is typically per-user with no team features.
-- **Platform-independent and git-tracked.** Plain text markdown in the project repo, version-controlled alongside the code. Works with any AI assistant that can read and write files. Every change is auditable through git history. No vendor lock-in, no opaque storage. Plain text is the most portable knowledge format — a raw material that any current or future AI platform can consume. Databases, vector stores, and proprietary formats are tied to the platforms that created them.
+- **Platform-independent and git-tracked.** Plain text markdown in the project repo, version-controlled alongside the code. Works with any AI assistant that can read and write files — no custom agentic infrastructure required. The sentinel tokens are just words in your message that the methodology tells the AI to act on, so the system works out of the box on any platform. Every change is auditable through git history. No vendor lock-in, no opaque storage. Plain text is the most portable knowledge format — a raw material that any current or future AI platform can consume. Databases, vector stores, and proprietary formats are tied to the platforms that created them.
 
 These distinctions compound over time. The longer the collaboration, the more valuable rich history, user-verified knowledge, and shared understanding become. For simple preference tracking on individual projects, platform-native memory may be enough. For long-term collaboration — weeks, months, years — where the AI needs deep contextual understanding to contribute meaningfully, that's where this system adds real value.
 
@@ -241,7 +239,7 @@ The core methodology works with any AI assistant that can read and write files a
 - **Hook support** — Lifecycle hooks are currently implemented for Claude Code only. Other platforms might be added in the future. If you are interested in support for a specific platform, provide your solution in a PR or file an issue (see Contributing).
 - **Single methodology version** — No automated migration tooling between methodology versions. Manual upgrade instructions are in [`upgrade.md`](upgrade.md).
 - **Instruction file reload** — Most AI platforms only load the instruction file at session start. Changes made during installation take effect in the next session, not immediately.
-- **No automatic reflection** — The AI is instructed to proactively propose memory updates but often fails to during focused execution (see "Working with the Memory System" above). The ideal solution is a separate reflection agent that monitors the conversation and surfaces "time for a note?" signals independently of the main execution agent — separating the execution concern from the reflection concern. This is architecturally viable: Claude Code's Stop hook fires per conversation pause with access to the full transcript, and the Claude Agent SDK can spawn subagents from hook scripts. A reflection subagent could analyse recent exchanges, identify when a note or world model update is warranted, and propose it to the user at the next prompt — while the actual note is still written by the main agent (which has the full conversation context) and approved by the user. This is future work.
+- **Automatic reflection is best-effort** — The methodology defines word-level and conceptual triggers for automatic memory operations, but these are unreliable during focused execution due to attention drift. Sentinel tokens (`readmem`, `updatemem`, `maintainmem`) solve the user-driven side — when present, the AI must act. For fully automatic reflection, the ideal solution is a separate reflection agent that monitors the conversation independently of the main execution agent — separating the execution concern from the reflection concern. This is architecturally viable (Claude Code's Stop hook provides transcript access, and the Agent SDK enables subagents) but is future work.
 
 ## Contributing
 
