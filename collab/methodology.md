@@ -8,6 +8,8 @@ All memory files live in a single directory. The directory path and system setti
 
 **Compaction** occurs when your context window fills up and older conversation content is automatically summarized to free space, losing detail.
 
+**Shared-knowledge repo:** For distributed collaboration scenarios a separate git repository is used to build up shared memory — across the user's own devices, across multiple users (teams), or both. The memory directory points into this repo, not into the project's code repo. When a shared-knowledge repo is used, it is the source of truth for memory; your in-context Tier 1 files may be stale relative to it.
+
 **Three memory types:**
 
 | Type | Purpose | Files |
@@ -62,10 +64,11 @@ If the indexes don't yield results:
 
 A new session is an implicit `readmem` trigger.
 
-1. Tier 1 files are already loaded via imports — trust them
-2. Check `world/state.md` for current work
-3. Scan recent entries in the Episodic Memory Index (`index.md`) for context on active work
-4. If prior work is unclear, search `notes.md` for recent notes
+1. If a shared-knowledge repo is used, pull it first to have the latest additions to the memory
+2. Tier 1 files are already loaded via imports — trust them
+3. Check `world/state.md` for current work
+4. Scan recent entries in the Episodic Memory Index (`index.md`) for context on active work
+5. If prior work is unclear, search `notes.md` for recent notes
 
 #### After Compaction
 
@@ -87,6 +90,8 @@ The purpose of updating memory is to build up a shared conceptual understanding 
 1. **Sentinel token (MUST):** The user includes `updatemem` in their message
 2. **Word cues (SHOULD):** The message or conversation mentions done, completed, decided, learned, concluded, failed, resolved, designed, planned, ready, committed, pushed, correction, insight, update memory, let's capture this, write a note, compaction, session ending, end of session
 3. **Conceptual (SHOULD):** A non-trivial logical unit of work has concluded — a discussion that produced decisions and/or learnings, a design, or conclusions; a piece of implementation was completed (feature, fix, refactor, investigation); the user shared context, preferences, or corrected your understanding
+
+**Before writing updates:** if a shared-knowledge repo is used, `git pull` first. Pulling keeps your memory current and minimises merge conflicts — without it you risk writing on top of stale state, or creating avoidable conflicts in append-only files.
 
 **What to consider capturing:**
 
@@ -298,7 +303,9 @@ After compaction, check whether the Episodic Memory Index now approaches the `co
 
 One AI session per user at a time. Multiple users may work on the same project concurrently.
 
-**Minimizing conflicts:** Use per-user sections (`##### @username`) in state.md (Current Work), context.md (Personal), and preferences.md. This gives each user their own write area, allowing git to auto-merge changes to different sections. Commit and push promptly after updating shared world files.
+**Minimizing conflicts:** Use per-user sections (`##### @username`) in state.md (Current Work), context.md (Personal), and preferences.md. This gives each user their own write area, allowing git to auto-merge changes to different sections.
+
+**Pull before reading, push after writing.** When a shared-knowledge repo is used, pull at `readmem` (so reads aren't stale) and push promptly after `updatemem` (so concurrent sessions see your updates before they start their own). This minimises stale-state edits and avoidable merge conflicts in append-only files.
 
 **Merge conflicts in append-only files** (notes.md, index.md): keep all entries from both versions — nothing should be lost.
 
