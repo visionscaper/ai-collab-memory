@@ -43,11 +43,11 @@ When the user includes `readmem` in their message, you MUST read relevant inform
 
 **How to read:**
 
+**BEFORE readmem, if a shared-knowledge repo is used, pull it first** (ONLY the shared-knowledge repo — not the project code repo) to have the latest additions to the memory — Tier 2 files on disk may have been updated remotely since session start.
+
 Always check your context window first: Tier 1 World Model information, World Model Index and Episodic Memory Index entries. The information in your context window contains most of what you need. Trust it before searching.
 
 If you cannot find what you need in your context window (attention may miss things in large contexts — this is normal), use the **index → search → read** pattern:
-
-**BEFORE searching, if a shared-knowledge repo is used, pull it first** (ONLY the shared-knowledge repo — not the project code repo) to have the latest additions to the memory — Tier 2 files on disk may have been updated remotely since session start.
 
 1. Check the Episodic Memory Index (`index.md`) or the World Model Index (`world/index.md`) for a relevant entry
 2. Note the date, keywords, and/or file pointer

@@ -10,6 +10,7 @@
   - updatemem: new "Before writing updates" subsection — `git pull` before writing to keep memory current and minimise merge conflicts
   - Concurrency: replaces the previous "commit and push promptly" sentence with a symmetric "Pull before reading, push after writing" rule, explicitly tied to `readmem` and `updatemem`
 - Follow-up (10-04-2026): all four pull/push rules clarified with "(ONLY the shared-knowledge repo — not the project code repo)". Trigger: AI pulled the project repo alongside the shared-knowledge repo at session start, conflating cwd with memory source-of-truth. Extra pulls aren't harmless — they may merge remote changes the user wasn't ready for. By definition the two always differ.
+- Follow-up (10-04-2026): readmem "How to read" pull rule rephrased "BEFORE searching" → "BEFORE readmem" and moved to the top of the subsection. Trigger: fourth self-referential failure — AI skipped the New Session pull at session start because the rule was scoped to the search fall-through branch (only fires when Tier 1 looks insufficient). Rephrasing hooks the rule to the operation name itself for token-level attention coupling: every time "readmem" is in attention, "pull" fires alongside it. Promotes the rule from a sub-branch step to a precondition of the entire operation.
 - Motivation: discovered on a multi-machine setup (Mac Studio + MacBook Pro) where a session almost duplicated work that the other machine had already committed. Tier 1 files loaded into context can be stale relative to the remote shared-knowledge repo.
 
 **Upgrade from v1.7.1:**
