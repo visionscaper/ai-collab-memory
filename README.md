@@ -3,6 +3,8 @@
 collabmem is a simple, easy-to-use, yet powerful memory system enabling long-term collaboration between
 humans and AI assistants. It's easy to install as well!
 
+Losing context at every new session or compaction is a well-known problem — and there are already memory solutions for it. But that's only the surface. Real long-term collaboration needs a rich conceptual history of what you've done together and a shared world model of the project, the user, and the work. That's where collabmem comes in.
+
 The memory is file-based and represented as plain text (easy to inspect), can be
 git-tracked (storage & versioning) and can be used to build up knowledge within a team of users.
 So no databases, no vector stores, no infrastructure. 
@@ -84,7 +86,9 @@ All files are git-tracked (in the code repo for solo installations, or in the sh
 
 ## Introduction
 
-In order to collaborate long-term with AI in an effective way, there needs to be a shared conceptual understanding about:
+Losing context across sessions is the visible symptom — existing memory solutions tackle that. But effective long-term collaboration with AI needs something deeper: a shared conceptual understanding that grows over time. Without it, the AI can't remember what the project is actually about, what matters to you, or why you ruled out an approach last week — the kind of knowledge that takes real time to build up and that makes the AI genuinely useful as a partner.
+
+This shared understanding has two parts:
  * history (episodic memory): what has been done, why, how and what decisions were made over time? What did we learn?
  * reality (world model): what is the context of the work being done, what is the project about, for what business, why?
    What is the current state of the work? How should the work be done in general, what are the guidelines and preferences?
@@ -204,9 +208,7 @@ Both mechanisms preserve knowledge — nothing is deleted. Consolidation and com
 
 ## What Makes This Different
 
-collabmem is optimized to build up and maintain memory for long-term collaboration. 
-So, the focus is on capturing conceptual knowledge that helps the AI (and the user) to effectively work together over 
-weeks, months, or even years. Further, the system is kept simple, making it easy to install, use, inspect, store and version.
+collabmem is optimized to build up and maintain memory for long-term collaboration. Surviving session and compaction boundaries is the baseline — the real goal is accumulating the conceptual knowledge, history and world model, that lets the AI (and the user) effectively work together over weeks, months, or even years. The system is kept simple, making it easy to install, use, inspect, store and version.
 Through its simplicity it also enables advanced use cases where teams of users build up shared knowledge together while 
 collaborating with AI.
 
