@@ -97,6 +97,10 @@ The purpose of updating memory is to build up a shared conceptual understanding 
 
 **What to consider capturing:**
 
+When writing a note, remember that notes serve two purposes — **conceptual record** (understanding and reasoning) and **concrete record** (non-trivial artefacts the episode produced). See the Notes Protocol for the full framing, and run the **Post-write Check** before finishing any substantive note.
+
+When writing the index entry, remember that an **index row is an association pointer, not a mini-note** — keep it to roughly 1–3 sentences of distinctive terms and meaningful context. See **Writing Episodic Memory Index Entries** in the Notes Protocol.
+
 - **Episodic memory (note + index entry):** What happened, what was decided, what was learned, what didn't work and why. History that may matter later — the reasoning behind a decision can be as valuable as the decision itself. See the Notes Protocol for how to write notes.
 - **World model update:** New or changed facts or conceptual knowledge about reality — personal or project context, working preferences, domain knowledge, procedures, current state. See the World Model Protocol for how to update.
 - **Both:** Most significant episodes produce both a note (what happened) and world model updates (what changed about reality, what new information or conceptual knowledge was learned or decided). After writing a note, always review whether the episode also changes the world model.
@@ -148,6 +152,14 @@ All consolidation and compaction is discussed with and approved by the user befo
 
 Notes are the historical record of collaboration — what was done, what was decided, what was learned, and why. A good note captures not just the outcome but the reasoning and conceptual insights behind it. This history has long-term value: the reasoning behind a decision made months ago may inform a decision today. Write notes with future sessions in mind (long-term collaboration) — they should be understandable without the original conversation context.
 
+#### What Notes Are For
+
+Every substantive note serves two purposes:
+
+1. **Conceptual record.** Capture the understanding built during the episode: what was explored, discussed, learned, or decided, and *why*. Write in conceptual terms — the substance of the thinking, the paths considered, the reasoning behind choices — not a play-by-play of actions. This is the raw material from which world model knowledge is derived over time, and what lets future sessions reconstruct *why* a decision was made.
+
+2. **Concrete record.** Capture non-trivial information or artefacts the episode produced: facts, numbers, paths, links, parameters, outcomes, short plans or drafts. If an artefact is large — a full plan, long procedure, detailed analysis — write a conceptual summary in the note and save the artefact to `docs/` with a reference. Notes should stay short; `docs/` is for long-form content. This applies especially to anything that involved user input, which is not recoverable from code or tools.
+
 #### Note Template
 
 ```
@@ -157,14 +169,20 @@ Notes are the historical record of collaboration — what was done, what was dec
 
 **With:** @username (or AI model name for AI-initiated observations)
 
-**Context:** Why we looked into this.
+**Context:** Why we looked into this — the question, problem, or trigger.
+Examples: "a question came up about why X keeps failing", "we needed a
+plan for the launch campaign", "issue #1 flagged a framing problem".
 
-**What We Did:**
-- Concise bullets of actions taken
+**What We Did / Discussed:**
+- Conceptual description of what was explored, tried, or worked through —
+  the substance of the thinking, not a play-by-play of tool calls or edits.
 
-**Key Learnings:**
-- What we discovered, decided, or concluded
-- What didn't work and why, if applicable
+**Key Learnings / Decisions:**
+- What was learned, concluded, or decided, and the reasoning behind it.
+- What didn't work and why, if applicable.
+- Concrete artefacts the episode produced (or references to them in
+  `docs/` if large): plans, procedures, drafts, results, parameters,
+  facts, links — anything future sessions might need without re-deriving.
 
 **Related:** Links to other notes, docs, PRs
 ```
@@ -179,14 +197,40 @@ Not every note needs the full template. Quick observations — patterns noticed,
 - When a prior note is superseded, follow the Amendment Protocol below
 - `notes.md` is the permanent historical record — it is never trimmed or rewritten
 
+#### Guard Against Invented Content
+
+Capture what the conversation actually produced — the reasoning, motivations, and insights that were genuinely discussed or concluded. Do not add plausible-sounding rationale, imagined motivations, or reasoning chains that were never stated, even to "help future sessions". Missing conceptual content is a failure; invented conceptual content is worse.
+
+#### Post-write Check
+
+For substantive notes, before finishing, verify:
+
+1. **Conceptual completeness.** If a future session read only this note, would it understand the reasoning — not just the outcome? Is there enough here that world model knowledge could be derived from it later?
+2. **Conceptual honesty.** Is every conceptual claim — reasoning, motivation, insight — something that was actually said, shown, or concluded in the conversation? Nothing invented to fill gaps?
+3. **Concrete completeness.** Is every non-trivial artefact the episode produced — plan, procedure, draft, result, parameter, fact, link — actually in the note (or referenced in `docs/` if large)? Especially anything that involved user input?
+
+Lightweight observation notes (title + `**With:**` + a few sentences) don't need the full check. But if the note carries decisions, learnings, or concrete artefacts, run it.
+
 #### Writing Episodic Memory Index Entries
 
-Every episodic memory index entry serves dual purpose: a reference for targeted searching AND an attention target that enables the AI to make associations across its context window. Write **concise contextualized facts** — every word should be either a distinctive term or meaningful context.
+Every episodic memory index entry serves two purposes: (a) **awareness** — by being in your context window, it tells you a note exists and what it is about, and (b) **association** — it acts as an attention target that links related topics in your context window to the underlying note. Write **concise contextualized facts** — every word should be either a distinctive term or meaningful context.
+
+**An index row is an association pointer, not a mini-note:**
+
+- Its job is to provide awareness — flag that a note exists and trigger attention toward it. The reasoning, details, and lessons live in the note itself.
+- Keep rows to roughly 1–3 sentences of distinctive terms and meaningful context.
+- If a row won't fit in 1–3 sentences, compress — drop the specifics and keep only distinctive terms and meaningful context. The row names what the note is about; the note holds the details.
+- If even compression isn't enough, the note likely covers two distinct episodes — split it into two notes, each with its own row.
+- Drift toward longer, mini-note-style entries happens easily during `updatemem`. Stay aware of this — when you catch the drift, rewrite the row shorter.
+
+**Examples:**
 
 - **Weak:** "We found that there was an issue with the API that took a while to fix"
 - **Strong (factual):** "Root cause (multi-day): rate limiter miscounted concurrent requests — caused cascading timeouts in payment flow"
 - **Weak:** "We discussed memory architecture and had some insights"
-- **Strong (conceptual):** "Attention drift (not competition) explains why LLMs fail at autonomous metacognition — instructions never attended to during generation. Three solution paths identified: reflection agent, sentinel tokens, latent-space memory"
+- **Strong (conceptual):** "Attention drift (not competition) explains why LLMs fail at autonomous metacognition — instructions never attended to during generation. Three solution paths: reflection agent, sentinel tokens, latent-space memory"
+- **Drifted (mini-note):** "Planned launch campaign three-beat rhythm: Show HN weekend → Tuesday thread 3–4 PM CET → quote-repost Wed/Thu. Self-quote at 10 PM CET for US West rotation. Pin thread 1–2 weeks. Heuristics: Tues/Wed best, avoid Mon/Fri, weekend weak for tech, first-30-min engagement matters most"
+- **Strong (compressed):** "Launch campaign three-beat rhythm planned (Show HN → Tuesday thread → quote-repost); campaign timing heuristics and rotation logic"
 
 Guidelines:
 

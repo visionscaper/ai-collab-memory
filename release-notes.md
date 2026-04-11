@@ -1,5 +1,32 @@
 # Release Notes
 
+## v1.8.1
+
+**Attention discipline for note and index writing.**
+
+Two write-surface failures had been accumulating: (1) notes drifting toward play-by-play action bullets and invented rationale instead of conceptual substance, and (2) index rows drifting toward mini-notes instead of association pointers. Both are attention-drift failures at the point of writing — the rules existed, but attention didn't fire on them during `updatemem` execution. v1.8.1 rewrites the Notes Protocol to be purpose-driven and adds execution-surface reinforcement in `updatemem`.
+
+**Changes since v1.8:**
+
+- **collab/methodology.md §5 (Notes Protocol):**
+  - New **What Notes Are For** subsection — notes serve two purposes: **conceptual record** (understanding and reasoning that feeds world model derivation over time) and **concrete record** (non-trivial artefacts the episode produced — facts, parameters, short plans, drafts). Size-based rule: if an artefact is large, write a conceptual summary in the note and save the artefact to `docs/` with a reference. Notes should stay short.
+  - Rewrote **Note Template** helper text. "Context" gets examples spanning conceptual and concrete triggers. "What We Did" → "What We Did / Discussed" with conceptual framing (not play-by-play). "Key Learnings" → "Key Learnings / Decisions" with explicit bullet for concrete artefacts (or references to `docs/` if large).
+  - New **Guard Against Invented Content** subsection — capture what the conversation actually produced; don't add plausible-sounding rationale, imagined motivations, or reasoning chains that were never stated. Missing conceptual content is a failure; invented conceptual content is worse.
+  - New **Post-write Check** subsection — three-item checklist for substantive notes: (1) conceptual completeness, (2) conceptual honesty, (3) concrete completeness. Lightweight observation notes don't need the full check.
+  - **Writing Episodic Memory Index Entries** reinforced. Opening reframed around two purposes: (a) **awareness** (the row is in your context window, so you know a note exists) and (b) **association** (the row acts as an attention target linking related topics to the underlying note). New rule: **an index row is an association pointer, not a mini-note** — keep rows to roughly 1–3 sentences of distinctive terms and meaningful context, compress specifics out when a row won't fit, split into two notes if even compression isn't enough. Drift-correction guidance added. New weak/strong example pair showing a drifted mini-note row vs. a compressed association-pointer row.
+- **collab/methodology.md §3 (updatemem):** Two mirror paragraphs added at the top of "What to consider capturing", referencing the exact section titles from §5 (**conceptual record**, **concrete record**, **Post-write Check**, **index row is an association pointer, not a mini-note**, **Writing Episodic Memory Index Entries**). Lexical coupling at the execution surface — the rules fire in attention at the same place the writing happens.
+- **collab/.collab-memory-system**: bumped to `v1.8.1`.
+
+**Why these are grouped:** both failures belong to the same sub-theme (attention discipline at write-time), both live in §5 and mirror into §3, and both are fixed with the same technique — explicit rules at the execution surface with lexical coupling to the operation name. The Notes Protocol overhaul and the index-entry reinforcement are one coherent change, not two.
+
+**Upgrade from v1.8:**
+
+The only *installed* file that changed is `collab/methodology.md`.
+
+1. In your installation, copy `collab/methodology.md` from the new version into your collab directory.
+2. Update your installation's `collab/.collab-memory-system` to `v1.8.1`.
+3. No memory data migration required.
+
 ## v1.8
 
 **Project renamed: `ai-collab-memory` → `collabmem`.**
